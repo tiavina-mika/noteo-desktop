@@ -1,13 +1,14 @@
 import {
   Box,
-  TextField,
   Typography,
 } from '@mui/material';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
+
+import TextField from '../../components/form/TextField';
 
 const noteSchema = object({
   title: string()
@@ -23,14 +24,15 @@ type NoteInput = TypeOf<typeof noteSchema>;
 const Add = () => {
   const [loading, setLoading] = useState(false);
 
+  const form = useForm<NoteInput>({
+    resolver: zodResolver(noteSchema),
+  });
+
   const {
-    register,
     formState: { errors, isSubmitSuccessful },
     reset,
     handleSubmit,
-  } = useForm<NoteInput>({
-    resolver: zodResolver(noteSchema),
-  });
+  } = form;
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -49,44 +51,42 @@ const Add = () => {
         <Typography variant='h4' component='h1' sx={{ mb: '2rem' }}>
           Add new note
         </Typography>
-        <Box
-          component='form'
-          noValidate
-          autoComplete='off'
-          onSubmit={handleSubmit(onSubmitHandler)}
-        >
-          <TextField
-            sx={{ mb: 2 }}
-            label='Title'
-            fullWidth
-            required
-            error={!!errors['title']}
-            helperText={errors['title'] ? errors['title'].message : ''}
-            {...register('title')}
-          />
-          <TextField
-            sx={{ mb: 2 }}
-            label='Content'
-            fullWidth
-            required
-            type='content'
-            error={!!errors['content']}
-            multiline
-            rows={6}
-            helperText={errors['content'] ? errors['content'].message : ''}
-            {...register('content')}
-          />
-
-          <LoadingButton
-            variant='contained'
-            fullWidth
-            type='submit'
-            loading={loading}
-            sx={{ py: '0.8rem', mt: '1rem' }}
+        <FormProvider {...form}>
+          <Box
+            component='form'
+            noValidate
+            autoComplete='off'
+            onSubmit={handleSubmit(onSubmitHandler)}
           >
-            Save
-          </LoadingButton>
-        </Box>
+            <TextField
+              sx={{ mb: 2 }}
+              name="title"
+              label='Title'
+              fullWidth
+              required
+            />
+
+            <TextField
+              sx={{ mb: 2 }}
+              name="content"
+              label='Content'
+              fullWidth
+              required
+              multiline
+              rows={6}
+            />
+
+            <LoadingButton
+              variant='contained'
+              fullWidth
+              type='submit'
+              loading={loading}
+              sx={{ py: '0.8rem', mt: '1rem' }}
+            >
+              Save
+            </LoadingButton>
+          </Box>          
+        </FormProvider>
       </Box>
     </Box>
   );
