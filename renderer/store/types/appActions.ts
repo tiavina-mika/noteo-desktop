@@ -1,0 +1,9 @@
+export const LOADING_START = 'LOADING_START';
+export const LOADING_END = 'LOADING_END';
+export const ERROR = 'ERROR';
+export const MESSAGE = 'MESSAGE';
+export const CLOSE_ERROR = 'CLOSE_ERROR';
+export const CLOSE_MESSAGE = 'CLOSE_MESSAGE';
+export const SUCCESS_MESSAGE = 'SUCCESS_MESSAGE';
+export const ERROR_MESSAGE = 'ERROR_MESSAGE';
+export const CLOSE_APP_SNACKBAR = 'CLOSE_APP_SNACKBAR';

@@ -26,10 +26,15 @@
     "electron": "^18.2.0",
     "electron-builder": "^23.0.3",
     "next": "^12.1.6",
+    "next-redux-wrapper": "^7.0.5",
     "nextron": "^8.1.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-hook-form": "^7.31.3",
+    "react-redux": "^8.0.2",
+    "redux": "^4.2.0",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.1",
     "typescript": "^4.6.4",
     "zod": "^3.17.3"
   }
