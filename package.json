@@ -21,6 +21,7 @@
     "@mui/lab": "^5.0.0-alpha.84",
     "@mui/material": "^5.8.2",
     "@mui/styles": "^5.8.0",
+    "@reduxjs/toolkit": "^1.8.2",
     "@types/node": "^16.11.7",
     "@types/react": "^18.0.8",
     "electron": "^18.2.0",

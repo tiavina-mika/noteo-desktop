@@ -1,23 +1,28 @@
-import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import { composeWithDevTools } from "redux-devtools-extension";
-import { createWrapper } from "next-redux-wrapper";
-import rootReducer from "./reducers";
+import { Action, combineReducers, configureStore, ThunkAction } from '@reduxjs/toolkit'
+import { createWrapper } from 'next-redux-wrapper';
 
-// initial states here
-const initalState = {};
+import appReducer from './slices/app';
+import notesReducer from './slices/notes';
 
-// middleware
-const middleware = [thunk];
+const rootReducer = combineReducers({
+    app: appReducer,
+    notes: notesReducer,
+})
 
-// creating store
-export const store = createStore(
-  rootReducer,
-  initalState,
-  composeWithDevTools(applyMiddleware(...middleware))
-);
+export const makeStore = () => {
+  return configureStore({
+    reducer: rootReducer,
+    // middleware: (getDefaultMiddleware) =>
+    //   // adding the api middleware enables caching, invalidation, polling and other features of `rtk-query`
+    //   getDefaultMiddleware().concat(pokemonApi.middleware),
+    // preloadedState,
+    devTools: true,
+  })
+}
 
-// assigning store to next wrapper
-const makeStore = () => store;
-
-export const wrapper = createWrapper(makeStore);
+export type RootState = ReturnType<typeof rootReducer>
+export type AppStore = ReturnType<typeof makeStore>
+export type AppState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch']
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>;
+export const wrapper = createWrapper<AppStore>(makeStore);

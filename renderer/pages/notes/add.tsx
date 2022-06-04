@@ -3,23 +3,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
-import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 
 import TextField from '../../components/form/TextField';
-
-const noteSchema = object({
-  title: string()
-    .min(1, 'Title is required')
-    .max(100, 'Title must be less than 100 characters'),
-  content: string()
-    .min(1, 'Content is required')
-    .max(1000, 'Content must be less than 1000 characters'),
-})
-
-type NoteInput = TypeOf<typeof noteSchema>;
+import { noteSchema } from '../../utils/validations';
+import { NoteInput } from '../../types/notes';
 
 const Add = () => {
   const [loading, setLoading] = useState(false);

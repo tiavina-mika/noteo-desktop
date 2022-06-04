@@ -5,7 +5,7 @@ type AppSnackBar = {
   duration: number,
 }
 
-export type APP = {
+export type AppReducer = {
 	loading: boolean,
 	error: string,
 	message: string,

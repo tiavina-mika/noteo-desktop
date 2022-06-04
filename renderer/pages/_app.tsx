@@ -2,8 +2,11 @@ import React from 'react';
 import Head from 'next/head';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+
 import { theme } from '../lib/theme';
 import type { AppProps } from 'next/app';
+import { wrapper } from '../store/store';
+import { Provider } from 'react-redux';
 
 
 declare module '@mui/styles/defaultTheme' {
@@ -11,9 +14,9 @@ declare module '@mui/styles/defaultTheme' {
   interface DefaultTheme extends Theme {}
 }
 
-
-export default function(props: AppProps) {
-  const { Component, pageProps } = props;
+const MyApp = ({ Component, ...rest }: AppProps) => {
+  const { store, props } = wrapper.useWrappedStore(rest);
+  const { pageProps } = props;
 
   React.useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');
@@ -27,12 +30,17 @@ export default function(props: AppProps) {
       <Head>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </StyledEngineProvider>
+      <Provider store={store}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </StyledEngineProvider>        
+      </Provider>
+
     </React.Fragment>
   );
-}
+};
+
+export default wrapper.withRedux(MyApp);
