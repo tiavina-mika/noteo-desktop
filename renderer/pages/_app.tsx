@@ -6,11 +6,21 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from '../lib/theme';
 import type { AppProps } from 'next/app';
 import { wrapper } from '../store/store';
+import { Box, styled } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
+
+const Layout = styled(Box)(({ theme }) => ({
+  backgroundColor: grey[200],
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  color: theme.palette.text.secondary,
+  minHeight: '100vh',
+}));
 
 const MyApp = (props: AppProps) => {
   const { Component, pageProps } = props;
@@ -30,7 +40,9 @@ const MyApp = (props: AppProps) => {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </ThemeProvider>
       </StyledEngineProvider>        
     </React.Fragment>
