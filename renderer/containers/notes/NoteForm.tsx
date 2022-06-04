@@ -8,12 +8,30 @@ import { LoadingButton } from '@mui/lab';
 
 import TextField from '../../components/form/TextField';
 import { noteSchema } from '../../utils/validations';
-import { NoteInput } from '../../types/notes';
+import { Note, NoteInput } from '../../types/notes';
+import { notes } from '../../utils/data';
+import dayjs from 'dayjs';
+import { useRouter } from 'next/router';
 
-const NoteForm = () => {
+const getInitialValues = (data) => {
+  if (!data) return {};
+
+  return {
+    title: data.title,
+    content: data.content,
+  };
+};
+
+type Props = {
+  note?: Note;
+}
+
+const NoteForm = ({ note }: Props) => {
   const [loading, setLoading] = useState(false);
+  const route = useRouter();
 
   const form = useForm<NoteInput>({
+    defaultValues: getInitialValues(note),
     resolver: zodResolver(noteSchema),
   });
 
@@ -31,7 +49,16 @@ const NoteForm = () => {
   }, [isSubmitSuccessful]);
 
   const onSubmitHandler: SubmitHandler<NoteInput> = (values) => {
-    console.log(values);
+    if (note) {
+      //
+    }
+    notes.push({
+      id: notes[notes.length -1].id++,
+      updatedAt: dayjs().format('DD MMMM YYYY'),
+      ...values
+    });
+
+    route.push('/home');
   };
 
   return (

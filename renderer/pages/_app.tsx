@@ -17,7 +17,7 @@ declare module '@mui/styles/defaultTheme' {
 const Layout = styled(Box)(({ theme }) => ({
   backgroundColor: grey[200],
   ...theme.typography.body2,
-  padding: theme.spacing(2),
+  // padding: theme.spacing(2),
   color: theme.palette.text.secondary,
   minHeight: '100vh',
 }));

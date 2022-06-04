@@ -5,6 +5,7 @@ import { Card, CardContent, Grid, styled } from '@mui/material';
 import { truncateString } from '../../utils/utils';
 import { notes } from '../../utils/data';
 import { Note } from '../../types/notes';
+import { useRouter } from 'next/router';
 
 const CustomCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -21,8 +22,12 @@ type Props = {
 }
 
 const Note = ({ note }: Props) => {
+  const route = useRouter();
+
+  const goToEdit = () => route.push('/notes/edit/' + note.id);
+
   return (
-    <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center">
+    <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center" onClick={goToEdit}>
       <CustomCard sx={{ alignSelf: 'stretch' }}>
         <CardContent>
           <Typography variant="subtitle1" color="text.secondary" gutterBottom fontWeight="bold">

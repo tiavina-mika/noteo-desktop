@@ -9,7 +9,7 @@ export const notes = createSlice({
     note: null,
   } as NotesReducer,
   reducers: {
-    createNote: (state, action: PayloadAction<NoteInput>) => {
+    createNote: (state, action: PayloadAction<Note>) => {
       state.note = action.payload;
       state.notes = [...state.notes, action.payload];
     },
