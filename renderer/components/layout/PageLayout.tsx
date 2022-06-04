@@ -5,7 +5,6 @@ import {
 } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
-import NoteForm from '../../containers/notes/NoteForm';
 import { useRouter } from 'next/router';
 
 const sx = {
@@ -17,23 +16,26 @@ const sx = {
 };
 
 type Props = {
-  title: string;
+  title?: string;
   children: React.ReactNode;
-  bodySx: any;
+  bodySx?: any;
+  withBackButton?: boolean;
 }
 
-const PageLayout = ({ title, children, bodySx }: Props) => {
+const PageLayout = ({ title, children, bodySx, withBackButton = true }: Props) => {
   const route = useRouter();
 
   const goBack = () => route.back();
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
+    <Box display="flex" flexDirection="column" alignItems="center" px={10}>
       <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch">
         <Box display="flex" alignSelf="stretch" pt={1.2}>
-          <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.button}>
-            <KeyboardBackspaceIcon />
-          </IconButton>
+          {withBackButton && (
+            <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.button}>
+              <KeyboardBackspaceIcon />
+            </IconButton>
+          )}
           <Typography variant='h5' color="text.primary" sx={{ flex: 1, textAlign: 'center' }}>
             {title}
           </Typography>
