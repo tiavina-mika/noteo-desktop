@@ -6,7 +6,7 @@ const initialState: AppReducer = {
 	loading: false,
 	error: null,
 	message: null,
-	appSnackBar: { open: false, type: "", message: "", duration: 0 }
+	appSnackBar: { open: false, type: "", message: "", duration: 0 },
 };
 
 export const app = createSlice({
@@ -35,13 +35,20 @@ export const app = createSlice({
   },
   extraReducers: {
     [HYDRATE]: (state, action) => {
-        console.log('HYDRATE', state, action.payload);
+        console.log('HYDRATE action app', state);
         return {
             ...state,
-            ...action.payload.notes,
+            ...action.payload,
+            // ...action.payload.message,
         };
     },
   },
+  // extraReducers: (builder) => {
+  //   builder.addCase(HYDRATE, (state, action) => [
+  //     ...state,
+  //     ...action.payload.toasts
+  //   ]);
+  // }
 });
 
 export const {

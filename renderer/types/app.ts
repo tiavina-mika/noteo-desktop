@@ -1,3 +1,5 @@
+import app from "../store/slices/app";
+
 type AppSnackBar = {
   open: boolean,
   type: string,
@@ -5,9 +7,9 @@ type AppSnackBar = {
   duration: number,
 }
 
-export type AppReducer = {
-	loading: boolean,
-	error: string,
-	message: string,
-	appSnackBar: AppSnackBar
+export interface AppReducer {
+	loading: boolean;
+	error: string;
+	message: string;
+	appSnackBar: AppSnackBar;
 }
