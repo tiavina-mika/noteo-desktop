@@ -16,3 +16,8 @@ export type NotesReducer = {
 
 export type NoteInput = z.infer<typeof noteSchema>;
 
+export interface EditInput {
+  id: any;
+  values: NoteInput;
+};
+
