@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
+import { EditNoteInput } from '../types/notes';
 
 /**
  * get single note by its id
@@ -58,3 +59,15 @@ export const getNotes = async () => {
     console.log('controller.note.getNotes error: ', error.massage);
   }
 }
+
+export const EDIT_NOTE = gql`
+  mutation UpdateNote($id: String!, $values: UpdateNoteInput!) {
+    updateNote(id: $id, values: $values) {
+      id
+      title
+      content
+      createdAt
+      updatedAt
+    }
+  }
+`;

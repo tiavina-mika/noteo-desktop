@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 import { Note, NoteInput, NotesReducer } from "../../types/notes";
 
-interface EditInput {
+interface EditNoteInput {
   id: any;
   values: NoteInput;
 };
@@ -22,7 +22,7 @@ export const notes = createSlice({
       state.note = action.payload;
       state.notes = [...state.notes, action.payload];
     },
-    editNote: (state, action: PayloadAction<EditInput>) => {
+    editNote: (state, action: PayloadAction<EditNoteInput>) => {
       const newNotes = [...state.notes];
       newNotes.map((note) => {
         if (note.id === action.payload.id) {

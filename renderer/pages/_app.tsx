@@ -5,9 +5,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { theme } from '../lib/theme';
 import type { AppProps } from 'next/app';
-import { wrapper } from '../store/store';
 import { Box, styled } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import client from '../apollo-client';
+import { ApolloProvider } from '@apollo/client';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -37,14 +38,17 @@ const MyApp = (props: AppProps) => {
       <Head>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </ThemeProvider>
-      </StyledEngineProvider>        
+      <ApolloProvider client={client}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeProvider>
+        </StyledEngineProvider>         
+      </ApolloProvider>
+       
     </React.Fragment>
   );
 };

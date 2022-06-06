@@ -1,17 +1,17 @@
 import {
-  Box,
+  Box, Snackbar,
 } from '@mui/material';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
 
 import TextField from '../../components/form/TextField';
 import { noteSchema } from '../../utils/validations';
 import { Note, NoteInput } from '../../types/notes';
-import { notes } from '../../utils/data';
-import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
+import { EDIT_NOTE } from '../../controllers/note';
+import { useMutation } from '@apollo/client';
 
 const getInitialValues = (data) => {
   if (!data) return {};
@@ -27,8 +27,9 @@ type Props = {
 }
 
 const NoteForm = ({ note }: Props) => {
-  const [loading, setLoading] = useState(false);
   const route = useRouter();
+
+  const [updateNote, { loading: updateNoteLoading, error: updateNoteError }] = useMutation(EDIT_NOTE);
 
   const form = useForm<NoteInput>({
     defaultValues: getInitialValues(note),
@@ -48,15 +49,10 @@ const NoteForm = ({ note }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
 
-  const onSubmitHandler: SubmitHandler<NoteInput> = (values) => {
+  const onSubmitHandler: SubmitHandler<NoteInput> = async (values) => {
     if (note) {
-      //
+      updateNote({ variables: { id: note.id, values }});
     }
-    notes.push({
-      id: notes[notes.length -1].id++,
-      updatedAt: dayjs().format('DD MMMM YYYY'),
-      ...values
-    });
 
     route.push('/home');
   };
@@ -91,12 +87,17 @@ const NoteForm = ({ note }: Props) => {
           variant='contained'
           fullWidth
           type='submit'
-          loading={loading}
+          loading={note ? updateNoteLoading : true}
           sx={{ py: '0.8rem', mt: '1rem' }}
         >
           Save
         </LoadingButton>
-      </Box>          
+      </Box>
+      <Snackbar
+        open={!!updateNoteError}
+        autoHideDuration={6000}
+        message={updateNoteError?.message}
+      />
     </FormProvider>
   );
 };
