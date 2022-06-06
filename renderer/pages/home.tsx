@@ -6,8 +6,7 @@ import { Box, Fab, Grid } from '@mui/material';
 import Note from '../containers/notes/Note';
 import { useRouter } from 'next/router';
 import PageLayout from '../components/layout/PageLayout';
-import client from '../apollo-client';
-import { gql } from '@apollo/client';
+import { getNotes } from '../controllers/note';
 
 const Home = ({ notes }) => {
   const route = useRouter();
@@ -34,22 +33,11 @@ const Home = ({ notes }) => {
 };
 
 export const getServerSideProps = async () => {
-  const { data } = await client.query({
-    query: gql`
-      query Notes {
-        getNotes {
-          id
-          title
-          content
-          updatedAt
-        }
-      }
-    `,
-  });
+  const { notes } = await getNotes();
 
   return {
     props: {
-      notes: data.getNotes,
+      notes,
     }
   };
 };
