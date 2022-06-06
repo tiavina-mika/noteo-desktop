@@ -10,7 +10,7 @@ import TextField from '../../components/form/TextField';
 import { noteSchema } from '../../utils/validations';
 import { Note, NoteInput } from '../../types/notes';
 import { useRouter } from 'next/router';
-import { EDIT_NOTE } from '../../controllers/note';
+import { ADD_NOTE, EDIT_NOTE } from '../../controllers/note';
 import { useMutation } from '@apollo/client';
 
 const getInitialValues = (data) => {
@@ -30,6 +30,7 @@ const NoteForm = ({ note }: Props) => {
   const route = useRouter();
 
   const [updateNote, { loading: updateNoteLoading, error: updateNoteError }] = useMutation(EDIT_NOTE);
+  const [createNote, { loading: createNoteLoading, error: createNoteError }] = useMutation(ADD_NOTE);
 
   const form = useForm<NoteInput>({
     defaultValues: getInitialValues(note),
@@ -52,7 +53,11 @@ const NoteForm = ({ note }: Props) => {
   const onSubmitHandler: SubmitHandler<NoteInput> = async (values) => {
     if (note) {
       updateNote({ variables: { id: note.id, values }});
+    } else {
+      createNote({ variables: { values }});
     }
+
+    if (updateNoteError || createNoteError) return;
 
     route.push('/home');
   };
@@ -87,7 +92,7 @@ const NoteForm = ({ note }: Props) => {
           variant='contained'
           fullWidth
           type='submit'
-          loading={note ? updateNoteLoading : true}
+          loading={note ? updateNoteLoading : createNoteLoading}
           sx={{ py: '0.8rem', mt: '1rem' }}
         >
           Save

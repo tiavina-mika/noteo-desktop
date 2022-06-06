@@ -71,3 +71,15 @@ export const EDIT_NOTE = gql`
     }
   }
 `;
+
+export const ADD_NOTE = gql`
+  mutation addNote($values: CreateNoteInput!) {
+    createNote(values: $values) {
+      id
+      title
+      content
+      createdAt
+      updatedAt
+    }
+  }
+`;
