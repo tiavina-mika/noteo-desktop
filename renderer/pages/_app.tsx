@@ -49,4 +49,5 @@ const MyApp = (props: AppProps) => {
   );
 };
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;
+// export default wrapper.withRedux(MyApp);

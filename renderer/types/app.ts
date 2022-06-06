@@ -1,4 +1,3 @@
-import app from "../store/slices/app";
 
 type AppSnackBar = {
   open: boolean,

@@ -3,6 +3,7 @@ import { TypeOf, z } from "zod";
 import { noteSchema } from "../utils/validations";
 
 export type Note = {
+  __typename: 'Note',
   id?: number;
   title?: string;
   content?: string;

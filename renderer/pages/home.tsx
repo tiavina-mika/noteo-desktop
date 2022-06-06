@@ -3,10 +3,11 @@ import Head from 'next/head';
 import AddIcon from '@mui/icons-material/Add';
 
 import { Box, Fab, Grid } from '@mui/material';
-import { notes } from '../utils/data';
 import Note from '../containers/notes/Note';
 import { useRouter } from 'next/router';
 import PageLayout from '../components/layout/PageLayout';
+import client from '../apollo-client';
+import { gql } from '@apollo/client';
 
 const Home = ({ notes }) => {
   const route = useRouter();
@@ -21,7 +22,7 @@ const Home = ({ notes }) => {
       <Box display="flex" flexDirection="column" alignItems="center">
         <Grid container spacing={2} justifyContent="center">
           {notes.map((note) => (
-            <Note key={note.id} note={note} />
+            <Note key={note._id} note={note} />
           ))}
         </Grid>
       </Box>
@@ -32,10 +33,24 @@ const Home = ({ notes }) => {
   );
 };
 
-export const getServerSideProps = () => {
+export const getServerSideProps = async () => {
+  const { data } = await client.query({
+    query: gql`
+      query Notes {
+        getNotes {
+          id
+          title
+          content
+          updatedAt
+        }
+      }
+    `,
+  });
+  console.log('data: ', data);
+
   return {
     props: {
-      notes,
+      notes: data.getNotes,
     }
   };
 };

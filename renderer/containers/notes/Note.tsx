@@ -6,6 +6,7 @@ import { truncateString } from '../../utils/utils';
 import { notes } from '../../utils/data';
 import { Note } from '../../types/notes';
 import { useRouter } from 'next/router';
+import dayjs from 'dayjs';
 
 const CustomCard = styled(Card)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -37,7 +38,7 @@ const Note = ({ note }: Props) => {
             {truncateString(note.content, 100)}
           </Typography>
           <Typography variant="body1" color="text.secondary" mt={3}>
-            {note.updatedAt}
+            {dayjs(note.updatedAt).format('DD MMMM YYYY')}
           </Typography>
         </CardContent>
       </CustomCard> 

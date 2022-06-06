@@ -4,3 +4,5 @@ node_modules
 .vscode
 app
 dist
+
+renderer/*env
