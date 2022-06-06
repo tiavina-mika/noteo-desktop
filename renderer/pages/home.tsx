@@ -22,7 +22,7 @@ const Home = ({ notes }) => {
       <Box display="flex" flexDirection="column" alignItems="center">
         <Grid container spacing={2} justifyContent="center">
           {notes.map((note) => (
-            <Note key={note._id} note={note} />
+            <Note key={note.id} note={note} />
           ))}
         </Grid>
       </Box>
@@ -46,7 +46,6 @@ export const getServerSideProps = async () => {
       }
     `,
   });
-  console.log('data: ', data);
 
   return {
     props: {

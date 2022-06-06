@@ -1,7 +1,9 @@
 import NoteForm from '../../../containers/notes/NoteForm';
 import PageLayout from '../../../components/layout/PageLayout';
-import { notes } from '../../../utils/data';
 import { Note } from '../../../types/notes';
+import { gql } from '@apollo/client';
+import { notes } from '../../../utils/data';
+import client from '../../../apollo-client';
 
 type Props = {
   note: Note;
@@ -14,10 +16,25 @@ const Edit = ({ note }: Props) => {
   );
 };
 
-export const getServerSideProps = ({ params }) => {
+export const getServerSideProps = async ({ params }) => {
+  const { data } = await client.query({
+    query: gql`
+    query GetNoteById($id: String!) {
+      getNoteById(id: $id) {
+        id
+        title
+        content
+      }
+    }
+    `,
+    variables: {
+      id: params.id,
+    }
+  });
+
   return {
     props: {
-      note: notes.find((note: Note) => note.id === +params.id),
+      note: data.getNoteById,
     }
   };
 };
