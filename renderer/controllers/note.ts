@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
-import { EditNoteInput } from '../types/notes';
 
 /**
  * get single note by its id

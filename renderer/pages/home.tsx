@@ -7,8 +7,16 @@ import Note from '../containers/notes/Note';
 import { useRouter } from 'next/router';
 import PageLayout from '../components/layout/PageLayout';
 import { getNotes } from '../controllers/note';
+import { getFolders } from '../controllers/folder';
+import { Note as NoteType} from '../types/notes';
+import { Folder as FolderType } from '../types/folders';
+import AppBar from '../containers/home/AppBar';
 
-const Home = ({ notes }) => {
+type Props = {
+  notes: NoteType[];
+  folders: FolderType[];
+}
+const Home = ({ notes, folders }: Props) => {
   const route = useRouter();
 
   const goToNoteCreation = () => route.push('/notes/add');
@@ -18,6 +26,7 @@ const Home = ({ notes }) => {
       <Head>
         <title>Noteo</title>
       </Head>
+      <AppBar />
       <Box display="flex" flexDirection="column" alignItems="center">
         <Grid container spacing={2} justifyContent="center">
           {notes.map((note) => (
@@ -34,10 +43,12 @@ const Home = ({ notes }) => {
 
 export const getServerSideProps = async () => {
   const { notes } = await getNotes();
+  const { folders } = await getFolders();
 
   return {
     props: {
       notes,
+      folders,
     }
   };
 };
