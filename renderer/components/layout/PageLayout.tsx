@@ -20,9 +20,13 @@ type Props = {
   children: React.ReactNode;
   bodySx?: any;
   withBackButton?: boolean;
+  actions?: React.ReactNode;
 }
 
-const PageLayout = ({ title, children, bodySx, withBackButton = true }: Props) => {
+const PageLayout = ({
+  title, children, bodySx, actions,
+  withBackButton = true
+}: Props) => {
   const route = useRouter();
 
   const goBack = () => route.back();
@@ -39,6 +43,11 @@ const PageLayout = ({ title, children, bodySx, withBackButton = true }: Props) =
           <Typography variant='h5' color="text.primary" sx={{ flex: 1, textAlign: 'center' }}>
             {title}
           </Typography>
+          {actions && (
+            <Box>
+              {actions}
+            </Box>
+          )}
         </Box>
         <Box pt={5} sx={bodySx}>
           {children}        

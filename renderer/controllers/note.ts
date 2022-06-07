@@ -83,3 +83,11 @@ export const ADD_NOTE = gql`
     }
   }
 `;
+
+export const DELETE_NOTE = gql`
+  mutation DeleteNote($id: String!) {
+    deleteNote(id: $id) {
+      id
+    }
+  }
+`;
