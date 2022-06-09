@@ -19,9 +19,6 @@ type Props = {
 const Home = ({ notes, folders }: Props) => {
   return (
     <PageLayout withBackButton={false}>
-      <Head>
-        <title>Noteo</title>
-      </Head>
       <AppBar />
       <Box display="flex" flexDirection="column" alignItems="center">
         <Grid container spacing={2} justifyContent="center">
