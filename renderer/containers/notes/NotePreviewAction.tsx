@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { Note } from '../../types/notes';
-import { DELETE_NOTE } from '../../controllers/note';
+import { RECYCLE_BIN_NOTE } from '../../controllers/note';
 import { Fragment, MouseEvent, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
@@ -25,7 +25,7 @@ const NotePreviewAction = ({ note }: Props) => {
   const open = Boolean(anchorEl);
   const route = useRouter();
 
-  const [deleteNote, { loading: deleteNoteLoading, error: deleteNoteError }] = useMutation(DELETE_NOTE);
+  const [moveToRecycleBin, { loading: moveToRecycleBinLoading, error: moveToRecycleBinError, data }] = useMutation(RECYCLE_BIN_NOTE);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,8 +36,8 @@ const NotePreviewAction = ({ note }: Props) => {
   };
 
   const onDelete = () => {
-    deleteNote({ variables: { id: note.id }});
-    if (deleteNoteLoading) return;
+    moveToRecycleBin({ variables: { id: note.id, value: true }});
+    if (moveToRecycleBinLoading) return;
     handleClose();
     route.push('/home');
   };

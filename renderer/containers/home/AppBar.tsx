@@ -6,7 +6,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { MouseEvent, useState } from 'react';
 import { Box } from '@mui/system';
 import FolderDialogForm from '../folders/FolderDialogForm';
-import { Folder } from '../../types/folders';
+import { useRouter } from 'next/router';
 
 const ITEM_HEIGHT = 48;
 
@@ -22,6 +22,8 @@ const ITEM_HEIGHT = 48;
 const AppBar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openFolderFormDialog, setOpenFolderFormDialog] = useState(false);
+
+  const route = useRouter();
 
   const open = Boolean(anchorEl);
 
@@ -46,6 +48,10 @@ const AppBar = () => {
 
   const handleFolderFormClose = () => {
     setOpenFolderFormDialog(false);
+  };
+
+  const goToRecycleBin = () => {
+    route.push('/recycle-bin');
   };
 
 
@@ -84,6 +90,11 @@ const AppBar = () => {
             {option.label}
           </MenuItem>
         ))} */}
+          <MenuItem
+            onClick={goToRecycleBin}
+          >
+            Recycle Bin
+          </MenuItem>
           <MenuItem
             onClick={handleFolderFormClickOpen}
           >

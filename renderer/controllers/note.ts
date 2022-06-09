@@ -71,7 +71,7 @@ export const getNotes = async () => {
   try {
     const { data } = await client.query({
       query: gql`
-        query Notes {
+        query GetNotes {
           getNotes {
             id
             title
@@ -98,7 +98,7 @@ export const getNotes = async () => {
   try {
     const { data } = await client.query({
       query: gql`
-        query Notes {
+        query GetNotesWithoutFolder {
           getNotesWithoutFolder {
             id
             title
@@ -111,6 +111,34 @@ export const getNotes = async () => {
 
     return {
       notes: data.getNotesWithoutFolder
+    }
+  } catch (error) {
+    console.log('controller.note.getNotes error: ', error.massage);
+  }
+}
+
+/**
+ * get notes with deleted true
+ * @returns 
+ */
+ export const getNotesFromRecycleBin = async () => {
+  try {
+    const { data } = await client.query({
+      query: gql`
+        query GetNotesFromRecycleBin {
+          getNotesFromRecycleBin {
+            id
+            title
+            content
+            updatedAt
+            deleted
+          }
+        }
+      `,
+    });
+
+    return {
+      notes: data.getNotesFromRecycleBin
     }
   } catch (error) {
     console.log('controller.note.getNotes error: ', error.massage);
@@ -144,6 +172,14 @@ export const ADD_NOTE = gql`
 export const DELETE_NOTE = gql`
   mutation DeleteNote($id: String!) {
     deleteNote(id: $id) {
+      id
+    }
+  }
+`;
+
+export const RECYCLE_BIN_NOTE = gql`
+  mutation MoveToRecycleBin($id: String!, $value: Boolean!) {
+    moveToRecycleBin(id: $id, value: $value) {
       id
     }
   }
