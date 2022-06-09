@@ -33,6 +33,37 @@ export const getNoteById = async (id: string) => {
 }
 
 /**
+ * get list of notes inside of its parent folder
+ * @param folderId 
+ * @returns 
+ */
+export const getNotesByFolderId = async (folderId: string) => {
+  try {
+    const { data } = await client.query({
+      query: gql`
+      query GetNotesByFolderId($folderId: String!) {
+        getNotesByFolderId(folderId: $folderId) {
+          id
+          title
+          content
+          updatedAt
+        }
+      }
+      `,
+      variables: {
+        folderId,
+      }
+    });
+
+    return {
+      notes: data.getNotesByFolderId
+    }
+  } catch (error) {
+    console.log('controller.note.getNotesByFolderId error: ', error.massage);
+  }
+}
+
+/**
  * get all notes
  * @returns 
  */
@@ -53,6 +84,33 @@ export const getNotes = async () => {
 
     return {
       notes: data.getNotes
+    }
+  } catch (error) {
+    console.log('controller.note.getNotes error: ', error.massage);
+  }
+}
+
+/**
+ * get all notes
+ * @returns 
+ */
+ export const getNotesWithoutFolder = async () => {
+  try {
+    const { data } = await client.query({
+      query: gql`
+        query Notes {
+          getNotesWithoutFolder {
+            id
+            title
+            content
+            updatedAt
+          }
+        }
+      `,
+    });
+
+    return {
+      notes: data.getNotesWithoutFolder
     }
   } catch (error) {
     console.log('controller.note.getNotes error: ', error.massage);

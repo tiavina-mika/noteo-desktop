@@ -8,10 +8,15 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useRouter } from 'next/router';
 
 const sx = {
-  button: (theme) => ({
+  backButton: (theme) => ({
     position: 'absolute',
     top: theme.spacing(1),
     left: theme.spacing(1),
+  }),
+  actions: (theme) => ({
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
   })
 };
 
@@ -34,17 +39,19 @@ const PageLayout = ({
   return (
     <Box display="flex" flexDirection="column" alignItems="center" px={10}>
       <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch">
-        <Box display="flex" alignSelf="stretch" pt={1.2}>
+        <Box display="flex" alignSelf="stretch" pt={1.2} >
           {withBackButton && (
-            <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.button}>
+            <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.backButton}>
               <KeyboardBackspaceIcon />
             </IconButton>
           )}
-          <Typography variant='h5' color="text.primary" sx={{ flex: 1, textAlign: 'center' }}>
-            {title}
-          </Typography>
+          {title && (
+            <Typography variant='h5' color="text.primary" sx={{ flex: 1, textAlign: 'center' }}>
+              {title}
+            </Typography>
+          )}
           {actions && (
-            <Box>
+            <Box sx={sx.actions}>
               {actions}
             </Box>
           )}

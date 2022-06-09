@@ -3,16 +3,17 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-import { Note } from '../../types/notes';
-import { DELETE_NOTE } from '../../controllers/note';
+import { Folder } from '../../types/folders';
+import { DELETE_FOLDER, EDIT_FOLDER } from '../../controllers/folder';
 import { Fragment, MouseEvent, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
+import FolderDialogForm from './FolderDialogForm';
 
 const ITEM_HEIGHT = 48;
 
 type Props = {
-  note: Note;
+  folder: Folder;
 }
 
 type Option = {
@@ -20,12 +21,16 @@ type Option = {
   onClick: () => void;
 }
 
-const NotePreviewAction = ({ note }: Props) => {
+const FolderPreviewAction = ({ folder }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openFolderFormDialog, setOpenFolderFormDialog] = useState(false);
+
   const open = Boolean(anchorEl);
   const route = useRouter();
 
-  const [deleteNote, { loading: deleteNoteLoading, error: deleteNoteError }] = useMutation(DELETE_NOTE);
+  const [deleteFolder, { loading: deleteFolderLoading, error: deleteFolderError }] = useMutation(DELETE_FOLDER);
+  const [updateFolder, { loading: updateFolderLoading, error: updateFolderError }] = useMutation(EDIT_FOLDER);
+
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,13 +41,30 @@ const NotePreviewAction = ({ note }: Props) => {
   };
 
   const onDelete = () => {
-    deleteNote({ variables: { id: note.id }});
-    if (deleteNoteLoading) return;
+    deleteFolder({ variables: { id: folder.id }});
     handleClose();
     route.push('/home');
   };
 
+  const onUpdate = () => {
+    updateFolder({ variables: { id: folder.id }});
+    handleClose();
+    // route.push('/home');
+  };
+
+  const handleFolderFormClickOpen = () => {
+    setOpenFolderFormDialog(true);
+  };
+
+  const handleFolderFormClose = () => {
+    setOpenFolderFormDialog(false);
+  };
+
   const options: Option[] = [
+    {
+      label: 'Rename',
+      onClick: handleFolderFormClickOpen,
+    },
     {
       label: 'Delete',
       onClick: onDelete,
@@ -54,8 +76,8 @@ const NotePreviewAction = ({ note }: Props) => {
     <Fragment>
       <IconButton
         aria-label="more"
-        id="note-preview-button"
-        aria-controls={open ? 'note-preview-menu' : undefined}
+        id="folder-preview-button"
+        aria-controls={open ? 'folder-preview-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
         aria-haspopup="true"
         onClick={handleClick}
@@ -63,9 +85,9 @@ const NotePreviewAction = ({ note }: Props) => {
         <MoreVertIcon />
       </IconButton>
       <Menu
-        id="note-preview-menu"
+        id="folder-preview-menu"
         MenuListProps={{
-          'aria-labelledby': 'note-preview-button',
+          'aria-labelledby': 'folder-preview-button',
         }}
         anchorEl={anchorEl}
         open={open}
@@ -86,9 +108,14 @@ const NotePreviewAction = ({ note }: Props) => {
           </MenuItem>
         ))}
       </Menu>
+      <FolderDialogForm
+        onClose={handleFolderFormClose}
+        open={openFolderFormDialog}
+        folder={folder}
+      />
     </Fragment>
   );
 };
 
-export default NotePreviewAction;
+export default FolderPreviewAction;
 

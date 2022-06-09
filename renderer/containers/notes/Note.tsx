@@ -1,35 +1,21 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
+import { CardContent, Grid } from '@mui/material';
 
-import { Card, CardContent, Grid, styled } from '@mui/material';
 import { truncateString } from '../../utils/utils';
 import { notes } from '../../utils/data';
 import { Note } from '../../types/notes';
-import { useRouter } from 'next/router';
 import dayjs from 'dayjs';
-
-const CustomCard = styled(Card)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
-  boxShadow: 'none',
-  borderRadius: 14,
-  textAlign: 'left',
-}));
+import Card from '../../components/Card';
 
 type Props = {
   note: Note;
 }
 
 const Note = ({ note }: Props) => {
-  const route = useRouter();
-
-  const goToEdit = () => route.push('/notes/edit/' + note.id);
-
   return (
-    <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center" onClick={goToEdit}>
-      <CustomCard sx={{ alignSelf: 'stretch' }}>
+    <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center">
+      <Card sx={{ alignSelf: 'stretch' }} url={'/notes/edit/' + note.id}>
         <CardContent>
           <Typography variant="subtitle1" color="text.secondary" gutterBottom fontWeight="bold">
             {note.title}
@@ -41,7 +27,7 @@ const Note = ({ note }: Props) => {
             {dayjs(note.updatedAt).format('DD MMMM YYYY')}
           </Typography>
         </CardContent>
-      </CustomCard> 
+      </Card> 
     </Grid>
   );
 };

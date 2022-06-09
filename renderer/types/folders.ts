@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-import { FolderSchema } from "../utils/validations";
+import { folderSchema } from "../utils/validations";
 
 export type Folder = {
   __typename: 'Folder',
-  id?: number;
+  id?: string;
   name?: string;
   updatedAt?: string;
 }
@@ -14,7 +14,7 @@ export type FoldersReducer = {
   Folders: Folder[];
 }
 
-export type FolderInput = z.infer<typeof FolderSchema>;
+export type FolderInput = z.infer<typeof folderSchema>;
 
 export interface EditFolderInput {
   id: any;

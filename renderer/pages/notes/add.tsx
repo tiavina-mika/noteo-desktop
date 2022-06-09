@@ -1,12 +1,8 @@
-import NoteForm from '../../containers/notes/NoteForm';
-import PageLayout from '../../components/layout/PageLayout';
-
+import CreateNotePage from '../../containers/notes/CreateNotePage';
 
 const Add = () => {
   return (
-    <PageLayout bodySx={{ maxWidth: '60vw' }} title="Add new note">
-      <NoteForm />        
-    </PageLayout>
+    <CreateNotePage />
   );
 };
 

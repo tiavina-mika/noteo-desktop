@@ -1,26 +1,22 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Head from 'next/head';
-import AddIcon from '@mui/icons-material/Add';
 
-import { Box, Fab, Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import Note from '../containers/notes/Note';
-import { useRouter } from 'next/router';
 import PageLayout from '../components/layout/PageLayout';
-import { getNotes } from '../controllers/note';
+import { getNotesWithoutFolder } from '../controllers/note';
 import { getFolders } from '../controllers/folder';
 import { Note as NoteType} from '../types/notes';
 import { Folder as FolderType } from '../types/folders';
 import AppBar from '../containers/home/AppBar';
+import Folder from '../containers/folders/Folder';
+import FloatingButtonActions from '../components/FloatingButtonActions';
 
 type Props = {
   notes: NoteType[];
   folders: FolderType[];
 }
 const Home = ({ notes, folders }: Props) => {
-  const route = useRouter();
-
-  const goToNoteCreation = () => route.push('/notes/add');
-
   return (
     <PageLayout withBackButton={false}>
       <Head>
@@ -29,20 +25,23 @@ const Home = ({ notes, folders }: Props) => {
       <AppBar />
       <Box display="flex" flexDirection="column" alignItems="center">
         <Grid container spacing={2} justifyContent="center">
-          {notes.map((note) => (
-            <Note key={note.id} note={note} />
-          ))}
+          <Fragment>
+            {folders.map((folder) => (
+              <Folder key={folder.id} folder={folder} />
+            ))}
+            {notes.map((note) => (
+              <Note key={note.id} note={note} />
+            ))}
+          </Fragment>
         </Grid>
       </Box>
-      <Fab color="primary" aria-label="add" sx={{ position: 'fixed', bottom: 15, right: 15}} onClick={goToNoteCreation}>
-        <AddIcon />
-      </Fab>
+      <FloatingButtonActions addUrl="/notes/add" />
     </PageLayout>
   );
 };
 
 export const getServerSideProps = async () => {
-  const { notes } = await getNotes();
+  const { notes } = await getNotesWithoutFolder();
   const { folders } = await getFolders();
 
   return {

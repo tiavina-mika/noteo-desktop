@@ -8,13 +8,17 @@ import { LoadingButton } from '@mui/lab';
 
 import TextField from '../../components/form/TextField';
 import { noteSchema } from '../../utils/validations';
-import { Note, NoteInput } from '../../types/notes';
+import { Note, NoteInput, NoteInputData } from '../../types/notes';
 import { useRouter } from 'next/router';
 import { ADD_NOTE, EDIT_NOTE } from '../../controllers/note';
 import { useMutation } from '@apollo/client';
+import { Folder } from '../../types/folders';
 
 const getInitialValues = (data) => {
-  if (!data) return {};
+  if (!data) return {
+    title: '',
+    content: '',
+  };
 
   return {
     title: data.title,
@@ -24,9 +28,10 @@ const getInitialValues = (data) => {
 
 type Props = {
   note?: Note;
+  folder?: Folder;
 }
 
-const NoteForm = ({ note }: Props) => {
+const NoteForm = ({ note, folder }: Props) => {
   const route = useRouter();
 
   const [updateNote, { loading: updateNoteLoading, error: updateNoteError }] = useMutation(EDIT_NOTE);
@@ -54,7 +59,12 @@ const NoteForm = ({ note }: Props) => {
     if (note) {
       updateNote({ variables: { id: note.id, values }});
     } else {
-      createNote({ variables: { values }});
+      const newValues: NoteInputData = { ...values };
+      if (folder) {
+        newValues.folder = folder.id;
+      }
+
+      createNote({ variables: { values: newValues }});
     }
 
     if (updateNoteError || createNoteError) return;

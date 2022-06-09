@@ -1,0 +1,6 @@
+https://www.apollographql.com/blog/apollo-client/next-js/next-js-getting-started/
+https://www.apollographql.com/tutorials/fullstack-quickstart/updating-data-with-mutations
+https://codetain.com/blog/implementing-crud-in-web-application-using-react-and-graphql
+https://lotfimeziani.dev/blog/001
+
+https://javascript.plainenglish.io/build-a-scalable-graphql-server-with-nestjs-mongodb-typescript-1eeda049f7c8
