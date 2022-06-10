@@ -3,7 +3,8 @@ import React from 'react';
 import PageLayout from '../components/layout/PageLayout';
 import { getNotesFromRecycleBin } from '../controllers/note';
 import { Note as NoteType} from '../types/notes';
-import ListContainer from '../containers/ListContainer';
+import { Box, Grid } from '@mui/material';
+import Note from '../containers/notes/Note';
 
 type Props = {
   notes: NoteType[];
@@ -11,7 +12,13 @@ type Props = {
 const RecycleBin = ({ notes }: Props) => {
   return (
     <PageLayout withBackButton>
-      <ListContainer notes={notes} />
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Grid container spacing={2} justifyContent="center">
+            {notes.map((note) => (
+              <Note key={note.id} note={note} onClick={() => {}} />
+            ))}
+          </Grid>
+        </Box>
     </PageLayout>
   );
 };

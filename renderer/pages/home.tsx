@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PageLayout from '../components/layout/PageLayout';
 import { getNotesWithoutFolder } from '../controllers/note';
 import { getFolders } from '../controllers/folder';
@@ -6,8 +6,10 @@ import { Note as NoteType} from '../types/notes';
 import { Folder as FolderType } from '../types/folders';
 import AppBar from '../containers/home/AppBar';
 import FloatingButtonActions from '../components/FloatingButtonActions';
-import ListContainer from '../containers/ListContainer';
 import { useRouter } from 'next/router';
+import { Box, Grid } from '@mui/material';
+import Folder from '../containers/folders/Folder';
+import Note from '../containers/notes/Note';
 
 type Props = {
   notes: NoteType[];
@@ -23,7 +25,18 @@ const Home = ({ notes, folders }: Props) => {
   return (
     <PageLayout withBackButton={false}>
       <AppBar />
-      <ListContainer folders={folders} notes={notes} onNoteSelect={handleNoteSelect} />
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Grid container spacing={2} justifyContent="center">
+          <Fragment>
+            {folders.map((folder) => (
+              <Folder key={folder.id} folder={folder} />
+            ))}
+            {notes.map((note) => (
+              <Note key={note.id} note={note} onClick={() => handleNoteSelect(note.id)} />
+            ))}
+          </Fragment>
+        </Grid>
+      </Box>
       <FloatingButtonActions addUrl="/notes/add" />
     </PageLayout>
   );
