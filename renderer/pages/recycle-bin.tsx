@@ -12,7 +12,7 @@ type Props = {
 const RecycleBin = ({ notes }: Props) => {
   return (
     <PageLayout withBackButton>
-        <Box display="flex" flexDirection="column" alignItems="center">
+        <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch" flex={1}>
           <Grid container spacing={2} justifyContent="center">
             {notes.map((note) => (
               <Note key={note.id} note={note} onClick={() => {}} />

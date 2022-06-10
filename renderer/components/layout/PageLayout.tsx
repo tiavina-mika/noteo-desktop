@@ -46,8 +46,8 @@ const PageLayout = ({
         <title>{pageTitle}</title>
       </Head>
       <Box display="flex" flexDirection="column" alignItems="center" px={10}>
-        <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch">
-          <Box display="flex" alignSelf="stretch" pt={1.2} >
+        <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch" flex={1}>
+          <Box display="flex" alignSelf="stretch" pt={1.2}>
             {withBackButton && (
               <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.backButton}>
                 <KeyboardBackspaceIcon />
@@ -64,7 +64,7 @@ const PageLayout = ({
               </Box>
             )}
           </Box>
-          <Box pt={5} sx={bodySx}>
+          <Box pt={5} sx={bodySx} alignSelf="stretch">
             {children}        
           </Box>
         </Box>
