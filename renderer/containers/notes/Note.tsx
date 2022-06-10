@@ -10,12 +10,13 @@ import Card from '../../components/Card';
 
 type Props = {
   note: Note;
+  onClick?: (id: string) => void;
 }
 
-const Note = ({ note }: Props) => {
+const Note = ({ note, onClick }: Props) => {
   return (
     <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center">
-      <Card sx={{ alignSelf: 'stretch' }} url={'/notes/edit/' + note.id}>
+      <Card sx={{ alignSelf: 'stretch' }} onClick={onClick}>
         <CardContent>
           <Typography variant="subtitle1" color="text.secondary" gutterBottom fontWeight="bold">
             {note.title}

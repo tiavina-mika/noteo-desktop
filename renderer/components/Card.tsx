@@ -1,6 +1,5 @@
 import React, { Fragment, ReactNode } from 'react';
 import { Card as MUICard, styled } from '@mui/material';
-import Link from 'next/link';
 
 const CustomCard = styled(MUICard)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -18,20 +17,14 @@ const CustomCard = styled(MUICard)(({ theme }) => ({
 type Props = {
   children: ReactNode;
   sx: any;
-  url?: string;
+  onClick?: (id?: any) => void;
 }
 
-const Card = ({ children, sx, url }: Props) => {
-  const Container = url ? Link : Fragment;
-  const props = url ? { href: url } : { };
-
+const Card = ({ children, sx, onClick }: Props) => {
   return (
-    <Container {...props}>
-      <CustomCard sx={sx}>
+      <CustomCard sx={sx} onClick={onClick}>
         {children}
       </CustomCard>       
-    </Container>
-
   );
 };
 

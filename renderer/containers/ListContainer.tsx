@@ -9,9 +9,12 @@ import Folder from './folders/Folder';
 type Props = {
   notes: NoteType[];
   folders?: FolderType[];
+  onNoteSelect?: (id: string) => void;
 }
+
 const ListContainer = ({
-  notes, folders
+  notes, folders,
+  onNoteSelect,
 }: Props) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
@@ -21,7 +24,7 @@ const ListContainer = ({
             <Folder key={folder.id} folder={folder} />
           ))}
           {notes.map((note) => (
-            <Note key={note.id} note={note} />
+            <Note key={note.id} note={note} onClick={() => onNoteSelect(note.id)} />
           ))}
         </Fragment>
       </Grid>

@@ -7,16 +7,23 @@ import { Folder as FolderType } from '../types/folders';
 import AppBar from '../containers/home/AppBar';
 import FloatingButtonActions from '../components/FloatingButtonActions';
 import ListContainer from '../containers/ListContainer';
+import { useRouter } from 'next/router';
 
 type Props = {
   notes: NoteType[];
   folders: FolderType[];
 }
 const Home = ({ notes, folders }: Props) => {
+  const route = useRouter();
+
+  const handleNoteSelect = (id: string) => {
+    route.push('/notes/edit/' + id)
+  }
+
   return (
     <PageLayout withBackButton={false}>
       <AppBar />
-      <ListContainer folders={folders} notes={notes} />
+      <ListContainer folders={folders} notes={notes} onNoteSelect={handleNoteSelect} />
       <FloatingButtonActions addUrl="/notes/add" />
     </PageLayout>
   );
