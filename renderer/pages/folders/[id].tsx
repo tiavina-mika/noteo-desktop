@@ -8,7 +8,7 @@ import { getNotesByFolderId } from '../../controllers/note';
 import { Note } from '../../types/notes';
 import NoteComponent from '../../containers/notes/Note';
 import FloatingButtonActions from '../../components/FloatingButtonActions';
-import NoNote from '../../containers/notes/NoNote';
+import EmptyNotes from '../../containers/notes/EmptyNotes';
 
 type Props = {
   folder: Folder;
@@ -32,7 +32,7 @@ const FolderPreview = ({ folder, notes }: Props) => {
               ))}
             </Grid>
           ) : (
-            <NoNote />
+            <EmptyNotes />
           )}
       </Box>
       <FloatingButtonActions addUrl={'/folders/notes/' + folder.id} />

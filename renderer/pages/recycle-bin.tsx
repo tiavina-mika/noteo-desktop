@@ -10,6 +10,7 @@ import ActionsDrawer from '../components/ActionsDrawer';
 import { useMutation, useQuery } from '@apollo/client';
 import RestoreNoteDialog from '../containers/recycleBin/RestoreNoteDialog';
 import { useRouter } from 'next/router';
+import EmptyNotes from '../containers/notes/EmptyNotes';
 
 type Props = {
   notes: NoteType[];
@@ -94,18 +95,23 @@ const RecycleBin = ({ notes }: Props) => {
 
   return (
     <PageLayout withBackButton elevate={false} title="Recycle Bin" loading={restoreNoteFromRecycleBinLoading || notesLoading}>
-      <Masonry>
-        {noteList.map((note) => (
-          <Note
-            key={note.id}
-            note={note}
-            onClick={() => handleNoteSelect(note.id)}
-            toggleSelectMode={toggleSelectMode}
-            selectMode={selectMode}
-            onSelect={handleSelectNote}
-          />
-        ))}        
-      </Masonry>
+        {noteList.length > 0
+          ? (
+            <Masonry>
+              {noteList.map((note) => (
+                  <Note
+                    key={note.id}
+                    note={note}
+                    onClick={() => handleNoteSelect(note.id)}
+                    toggleSelectMode={toggleSelectMode}
+                    selectMode={selectMode}
+                    onSelect={handleSelectNote}
+                  />
+                )) }      
+            </Masonry>
+          ): (
+            <EmptyNotes />
+          )}  
       <ActionsDrawer
         open={selectedNoteIds.length > 0}
         onClose={onCloseActionsDrawer}

@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material';
 import NoteAltIcon from '@mui/icons-material/NoteAlt';
 
-const NoNote = () => {
+const EmptyNotes = () => {
   return (
     <Box flex={1} alignSelf="stretch" mt={2}>
       <Stack sx={{ opacity: 0.6 }} alignItems="center" spacing={1}>
@@ -15,5 +15,5 @@ const NoNote = () => {
 };
 
 
-export default NoNote;
+export default EmptyNotes;
 

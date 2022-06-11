@@ -15,6 +15,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import HomeAppBar from '../containers/home/HomeAppBar';
 import Masonry from '../components/Masonry';
 import ActionsDrawer from '../components/ActionsDrawer';
+import EmptyNotes from '../containers/notes/EmptyNotes';
 
 interface ISelectedCard {
   id: string;
@@ -96,23 +97,29 @@ const Home = ({ notes, folders }: Props) => {
 
   return (
     <PageLayout withBackButton={false} loading={notesLoading} leftActions={<HomeAppBar />} elevate={false} bodySx={{ alignSelf: 'stretch' }}>
-        <Masonry>
-          <Fragment>
-            {folders.map((folder) => (
-              <Folder key={folder.id} folder={folder} />
-            ))}
-            {noteList.map((note) => (
-              <Note
-                key={note.id}
-                note={note}
-                onClick={() => handleNoteSelect(note.id)}
-                toggleSelectMode={toggleSelectMode}
-                selectMode={selectMode}
-                onSelect={handleSelectNote}
-              />
-            ))}
-          </Fragment>
-        </Masonry>
+        {[...folders, ...noteList].length > 0
+          ? (
+            <Masonry>
+              <Fragment>
+                {folders.map((folder) => (
+                  <Folder key={folder.id} folder={folder} />
+                ))}
+                {noteList.map((note) => (
+                  <Note
+                    key={note.id}
+                    note={note}
+                    onClick={() => handleNoteSelect(note.id)}
+                    toggleSelectMode={toggleSelectMode}
+                    selectMode={selectMode}
+                    onSelect={handleSelectNote}
+                  />
+                ))}
+              </Fragment>
+            </Masonry>
+          ): (
+            <EmptyNotes />
+          )
+        }
          <ActionsDrawer
             open={selectedCards.length > 0}
             onClose={onCloseActionsDrawer}

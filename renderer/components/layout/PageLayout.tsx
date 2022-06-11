@@ -35,6 +35,7 @@ type Props = {
   rightActions?: React.ReactNode;
   pageTitle?: string;
   elevate?: boolean;
+  fullWidth?: boolean;
 }
 
 const PageLayout = ({
@@ -43,6 +44,7 @@ const PageLayout = ({
   withBackButton = true,
   loading, rightActions,
   elevate = false,
+  fullWidth = true,
 }: Props) => {
   const route = useRouter();
 
@@ -73,7 +75,7 @@ const PageLayout = ({
         </Toolbar>
       </AppBar>
       <Box display="flex" flexDirection="column" alignItems="center" px={10}>
-        <Box pt={5} sx={bodySx}>
+        <Box pt={5} sx={bodySx} alignSelf={fullWidth ? 'stretch' : ''}>
           {children}        
         </Box>
       </Box>

@@ -43,6 +43,8 @@ const FolderPreviewAction = ({ folder }: Props) => {
   const onDelete = () => {
     deleteFolder({ variables: { id: folder.id }});
     handleClose();
+
+    if (deleteFolderLoading) return;
     route.push('/home');
   };
 

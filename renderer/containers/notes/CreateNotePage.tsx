@@ -8,7 +8,7 @@ type Props = {
 }
 const CreateNotePage = ({ title = 'Add new note', folder }: Props) => {
   return (
-    <PageLayout bodySx={{ maxWidth: '60vw' }} title={title}>
+    <PageLayout bodySx={{ maxWidth: '60vw' }} title={title} fullWidth={false}>
       <NoteForm folder={folder} />        
     </PageLayout>
   );
