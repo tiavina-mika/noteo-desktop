@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useRouter } from 'next/router';
@@ -29,6 +29,7 @@ type Props = {
 const Home = ({ notes, folders }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
+  const [isNotesDeleted, setIsNotesDeleted] = useState<boolean>(false);
 
   const [
     moveNotesToRecycleBin,
@@ -52,6 +53,7 @@ const Home = ({ notes, folders }: Props) => {
 
   const handleSelectNote = (id: string, checked: boolean) => {
     // add the checked notes to the selected cards
+    setIsNotesDeleted(false);
     if (checked) {
       setSelectedCards((prev) => [...prev, { id, type: 'note' }]);
       return;
@@ -73,6 +75,7 @@ const Home = ({ notes, folders }: Props) => {
     });
 
     if (!moveNotesToRecycleBinLoading) {
+      setIsNotesDeleted(true);
       setSelectedCards([]);
     }
   };
@@ -80,7 +83,16 @@ const Home = ({ notes, folders }: Props) => {
   const onCloseActionsDrawer = () => {
     setSelectedCards([]);
     toggleSelectMode();
-  }
+  };
+
+  
+  const noteList = useMemo(() => {
+    if (isNotesDeleted && newNotesData) {
+      return newNotesData.getNotesWithoutFolder;
+    }
+
+    return notes;
+  }, [newNotesData, newNotesData, notes]);
 
   return (
     <PageLayout withBackButton={false} loading={notesLoading} leftActions={<HomeAppBar />} elevate={false}>
@@ -89,7 +101,7 @@ const Home = ({ notes, folders }: Props) => {
             {folders.map((folder) => (
               <Folder key={folder.id} folder={folder} />
             ))}
-            {(newNotesData?.getNotesWithoutFolder || notes).map((note) => (
+            {noteList.map((note) => (
               <Note
                 key={note.id}
                 note={note}

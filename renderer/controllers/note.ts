@@ -4,15 +4,14 @@ import client from '../apollo-client';
 
 
 export const NOTES_WITHOUT_FOLDER = gql`
-query GetNotesWithoutFolder {
- getNotesWithoutFolder {
-   id
-   title
-   content
-   updatedAt
- }
-}
-
+  query GetNotesWithoutFolder {
+    getNotesWithoutFolder {
+      id
+      title
+      content
+      updatedAt
+    }
+  }
 `;
 
 /**
@@ -57,12 +56,29 @@ export const DELETE_NOTE = gql`
  }
 `;
 
+export const DELETE_NOTES = gql`
+  mutation DeleteNotes ($ids: [String!]!) {
+    deleteNotes(ids: $ids) 
+  }
+`;
+
 export const RECYCLE_BIN_NOTE = gql`
  mutation MoveNoteToRecycleBin($id: String!, $value: Boolean!) {
    moveNoteToRecycleBin(id: $id, value: $value) {
      id
    }
  }
+`;
+
+export const NOTES_FROM_RECYCLE_BIN = gql`
+  query GetNotesFromRecycleBin {
+    getNotesFromRecycleBin {
+      id
+      title
+      content
+      updatedAt
+    }
+  }
 `;
 
 /**
@@ -189,17 +205,7 @@ export const getNotes = async () => {
  export const getNotesFromRecycleBin = async () => {
   try {
     const { data } = await client.query({
-      query: gql`
-        query GetNotesFromRecycleBin {
-          getNotesFromRecycleBin {
-            id
-            title
-            content
-            updatedAt
-            deleted
-          }
-        }
-      `,
+      query: NOTES_FROM_RECYCLE_BIN,
     });
 
     return {

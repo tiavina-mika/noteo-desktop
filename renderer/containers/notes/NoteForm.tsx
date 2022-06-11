@@ -72,8 +72,9 @@ const NoteForm = ({
     }
 
     if (updateNoteError || createNoteError) return;
-
-    if (onSubmit && (!createNoteLoading || !updateNoteLoading)) {
+    if (createNoteLoading || updateNoteLoading) return;
+  
+    if (onSubmit) {
       onSubmit();
       return;
     }
