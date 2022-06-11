@@ -71,7 +71,7 @@ const FolderDialogForm = ({
       createFolder({ variables: { values }});
     }
 
-    // if (createFolderLoading || updateFolderLoading) return;
+    if (createFolderLoading || updateFolderLoading) return;
     if (updateFolderError || createFolderError) return;
     onClose();
 

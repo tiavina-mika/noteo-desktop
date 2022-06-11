@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { Folder } from '../../types/folders';
-import { DELETE_FOLDER, EDIT_FOLDER } from '../../controllers/folder';
+import { DELETE_FOLDER } from '../../controllers/folder';
 import { Fragment, MouseEvent, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
@@ -29,8 +29,6 @@ const FolderPreviewAction = ({ folder }: Props) => {
   const route = useRouter();
 
   const [deleteFolder, { loading: deleteFolderLoading, error: deleteFolderError }] = useMutation(DELETE_FOLDER);
-  const [updateFolder, { loading: updateFolderLoading, error: updateFolderError }] = useMutation(EDIT_FOLDER);
-
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -46,12 +44,6 @@ const FolderPreviewAction = ({ folder }: Props) => {
 
     if (deleteFolderLoading) return;
     route.push('/home');
-  };
-
-  const onUpdate = () => {
-    updateFolder({ variables: { id: folder.id }});
-    handleClose();
-    // route.push('/home');
   };
 
   const handleFolderFormClickOpen = () => {
