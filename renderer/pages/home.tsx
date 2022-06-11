@@ -1,10 +1,6 @@
 import React, { Fragment, useState } from 'react';
 
-import {
-  Box, Button, AppBar as MUIAppBar, Stack, Typography, IconButton,
-} from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from 'next/router';
 
 import PageLayout from '../components/layout/PageLayout';
@@ -18,6 +14,7 @@ import Note from '../containers/notes/Note';
 import { useMutation, useQuery } from '@apollo/client';
 import HomeAppBar from '../containers/home/HomeAppBar';
 import Masonry from '../components/Masonry';
+import ActionsDrawer from '../components/ActionsDrawer';
 
 interface ISelectedCard {
   id: string;
@@ -101,26 +98,17 @@ const Home = ({ notes, folders }: Props) => {
             ))}
           </Fragment>
         </Masonry>
-         {selectedCards.length > 0 && (
-          <MUIAppBar position="fixed" color="inherit" sx={{ top: 'auto', bottom: 0, backgroundColor: '#fff' }}>
-            <Box display="flex" justifyContent="center" p={1.5}>
-              <Stack direction="row" spacing={2.8}>
-                <Button type="button" onClick={handleDeleteAll} variant="text" sx={{ textTransform: 'capitalize'}}>
-                  <Stack direction="column" alignItems="center">
-                    <DeleteOutlineIcon />
-                    <Typography>
-                      Delete
-                    </Typography>
-                  </Stack>              
-                </Button>
-              </Stack>          
-            </Box>
-            <IconButton sx={{ position: 'absolute', right: 20, bottom: 20 }} onClick={onCloseActionsDrawer}>
-              <CloseIcon />
-            </IconButton>
-          </MUIAppBar>
-         )}
-
+         <ActionsDrawer
+            open={selectedCards.length > 0}
+            onClose={onCloseActionsDrawer}
+            actions={[
+              {
+                label: 'Delete',
+                icon: <DeleteOutlineIcon />,
+                onClick: handleDeleteAll,
+              }
+            ]}
+         />
       <FloatingButtonActions addUrl="/notes/add" />
     </PageLayout>
   );
