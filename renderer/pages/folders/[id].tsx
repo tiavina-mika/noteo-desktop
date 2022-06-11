@@ -18,7 +18,7 @@ const FolderPreview = ({ folder, notes }: Props) => {
   return (
     <PageLayout
       bodySx={{ flex:1, alignSelf: 'stretch', alignItems: 'center', display: 'flex', flexDirection: 'column' }}
-      actions={<FolderPreviewAction folder={folder} />}
+      rightActions={<FolderPreviewAction folder={folder} />}
     >
       <Typography variant="h1" sx={{ fontSize: 22 }} color="text.primary">
         {folder.name}

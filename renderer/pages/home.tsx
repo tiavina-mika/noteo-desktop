@@ -20,10 +20,12 @@ interface ISelectedCard {
   id: string;
   type: 'note' | 'folder';
 }
+
 type Props = {
   notes: NoteType[];
   folders: FolderType[];
 }
+
 const Home = ({ notes, folders }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
@@ -32,6 +34,7 @@ const Home = ({ notes, folders }: Props) => {
     moveNotesToRecycleBin,
     { loading: moveNotesToRecycleBinLoading, error: moveNotesToRecycleBinError, data: deletedNotes }
   ] = useMutation(RECYCLE_BIN_NOTES);
+
   const {
     data: newNotesData, error: notesError, loading: notesLoading,
   } = useQuery(
