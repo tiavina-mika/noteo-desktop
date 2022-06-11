@@ -3,13 +3,36 @@ import { gql } from '@apollo/client';
 import client from '../apollo-client';
 
 export const GET_FOLDERS = gql`
-query Folders {
-  getFolders {
-    id
-    name
-    updatedAt
+  query Folders {
+    getFolders {
+      id
+      name
+      updatedAt
+    }
   }
-}
+`;
+
+// {
+//   "data": {
+//     "getFoldersWithNotesCount": [
+//       {
+//         "id": "62a4e310237ee736c492a71b",
+//         "notes": 0,
+//         "name": "folder 2",
+//         "updatedAt": "2022-06-11T18:46:40.488Z"
+//       },
+//     ]
+//   }
+// }
+export const GET_FOLDERS_WITH_NOTES_COUNT = gql`
+  query GetFoldersWithNotesCount {
+    getFoldersWithNotesCount {
+      id
+      notesCount
+      name
+      updatedAt
+    }
+  }
 `;
 
 /**
@@ -53,6 +76,20 @@ export const getFolders = async () => {
 
     return {
       folders: data.getFolders
+    }
+  } catch (error) {
+    console.log('controller.folder.getFolders error: ', error.massage);
+  }
+}
+
+export const getFoldersWithNotesCount = async () => {
+  try {
+    const { data } = await client.query({
+      query: GET_FOLDERS_WITH_NOTES_COUNT,
+    });
+
+    return {
+      folders: data.getFoldersWithNotesCount
     }
   } catch (error) {
     console.log('controller.folder.getFolders error: ', error.massage);

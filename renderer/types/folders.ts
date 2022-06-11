@@ -7,6 +7,7 @@ export type Folder = {
   id?: string;
   name?: string;
   updatedAt?: string;
+  notesCount?: number;
 }
 
 export type FoldersReducer = {

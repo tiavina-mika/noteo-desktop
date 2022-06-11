@@ -20,22 +20,22 @@ const Folder = ({ folder }: Props) => {
   };
 
   return (
-      <Card sx={{ alignSelf: 'stretch', height: 75 }} onClick={handleCardClick}>
+      <Card sx={{ alignSelf: 'stretch', height: 95 }} onClick={handleCardClick}>
         <CardContent>
         <Stack
           direction="row"
           spacing={2}
         >
-          <Box>
+          <Box display="flex" alignItems="center">
             <FolderIcon />
           </Box>
           <Box>
             <Typography variant="subtitle1" color="text.secondary" fontWeight="bold">
               {truncateString(folder.name, 30)}
             </Typography>
-            {/* <Typography variant="body1" color="text.secondary" mt={3}>
-              {dayjs(folder.updatedAt).format('DD MMMM YYYY')}
-            </Typography> */}            
+            <Typography variant="body1" color="text.secondary" mt={0} pt={0}>
+              {folder.notesCount}
+            </Typography>
           </Box>
         </Stack>
         </CardContent>

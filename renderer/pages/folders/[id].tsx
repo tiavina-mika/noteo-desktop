@@ -1,5 +1,3 @@
-import { Box, Grid, Typography } from '@mui/material';
-
 import PageLayout from '../../components/layout/PageLayout';
 import { Folder } from '../../types/folders';
 import { getFolderById } from '../../controllers/folder';
@@ -9,6 +7,7 @@ import { Note } from '../../types/notes';
 import NoteComponent from '../../containers/notes/Note';
 import FloatingButtonActions from '../../components/FloatingButtonActions';
 import EmptyNotes from '../../containers/notes/EmptyNotes';
+import Masonry from '../../components/Masonry';
 
 type Props = {
   folder: Folder;
@@ -17,22 +16,19 @@ type Props = {
 const FolderPreview = ({ folder, notes }: Props) => {
   return (
     <PageLayout
-      bodySx={{ flex:1, alignSelf: 'stretch', alignItems: 'center', display: 'flex', flexDirection: 'column' }}
       title={folder.name}
       rightActions={<FolderPreviewAction folder={folder} />}
     >
-      <Box display="flex" flexDirection="column" alignSelf="stretch" alignItems="center" mt={2}>
-        {notes.length > 0
-          ? (
-            <Grid container spacing={2} justifyContent="center">
-              {notes.map((note) => (
-                <NoteComponent key={note.id} note={note} />
-              ))}
-            </Grid>
-          ) : (
-            <EmptyNotes />
-          )}
-      </Box>
+      {notes.length > 0
+        ? (
+          <Masonry>
+            {notes.map((note) => (
+              <NoteComponent key={note.id} note={note} />
+            ))}
+          </Masonry>
+        ) : (
+          <EmptyNotes />
+        )}
       <FloatingButtonActions addUrl={'/folders/notes/' + folder.id} />
     </PageLayout>
   );

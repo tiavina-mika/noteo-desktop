@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 
 import PageLayout from '../components/layout/PageLayout';
 import { getNotesWithoutFolder, NOTES_WITHOUT_FOLDER, RECYCLE_BIN_NOTES } from '../controllers/note';
-import { getFolders, GET_FOLDERS } from '../controllers/folder';
+import { getFoldersWithNotesCount, GET_FOLDERS_WITH_NOTES_COUNT } from '../controllers/folder';
 import { Note as NoteType} from '../types/notes';
 import { Folder as FolderType } from '../types/folders';
 import FloatingButtonActions from '../components/FloatingButtonActions';
@@ -48,9 +48,10 @@ const Home = ({ notes, folders }: Props) => {
   const {
     data: newFoldersData, error: foldersError, loading: foldersLoading,
   } = useQuery(
-    GET_FOLDERS,
+    GET_FOLDERS_WITH_NOTES_COUNT,
     { skip: !isNewFolderAdded }
   );
+  console.log('newFoldersData: ', newFoldersData);
 
   const route = useRouter();
 
@@ -105,7 +106,7 @@ const Home = ({ notes, folders }: Props) => {
 
   const folderList = useMemo(() => {
     if (newFoldersData) {
-      return newFoldersData.getFolders;
+      return newFoldersData.getFoldersWithNotesCount;
     }
 
     return folders;
@@ -128,7 +129,7 @@ const Home = ({ notes, folders }: Props) => {
             <Masonry>
               <Fragment>
                 {folderList.map((folder) => (
-                  <Folder key={folder.id} folder={folder} />
+                  <Folder key={folder._id} folder={folder} />
                 ))}
                 {noteList.map((note) => (
                   <Note
@@ -164,7 +165,7 @@ const Home = ({ notes, folders }: Props) => {
 
 export const getServerSideProps = async () => {
   const { notes } = await getNotesWithoutFolder();
-  const { folders } = await getFolders();
+  const { folders } = await getFoldersWithNotesCount();
 
   return {
     props: {
