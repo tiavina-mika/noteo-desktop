@@ -18,7 +18,10 @@ const ITEM_HEIGHT = 48;
 //   onClick: () => void;
 // }
 
-const HomeAppBar = () => {
+type Props = {
+  updateFoldersList?: (value?: boolean) => void;
+}
+const HomeAppBar = ({ updateFoldersList }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openFolderFormDialog, setOpenFolderFormDialog] = useState(false);
 
@@ -42,9 +45,12 @@ const HomeAppBar = () => {
   // ];
 
   const handleFolderFormClickOpen = () => {
+    updateFoldersList(false);
     setOpenFolderFormDialog(true);
+    handleClose();
   };
 
+  
   const handleFolderFormClose = () => {
     setOpenFolderFormDialog(false);
   };
@@ -103,6 +109,7 @@ const HomeAppBar = () => {
       <FolderDialogForm
         onClose={handleFolderFormClose}
         open={openFolderFormDialog}
+        updateFoldersList={updateFoldersList}
       />
     </Fragment>
   );

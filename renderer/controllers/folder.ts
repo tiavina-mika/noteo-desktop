@@ -2,6 +2,16 @@ import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
 
+export const GET_FOLDERS = gql`
+query Folders {
+  getFolders {
+    id
+    name
+    updatedAt
+  }
+}
+`;
+
 /**
  * get single folder by its id
  * @param id 
@@ -38,15 +48,7 @@ export const getFolderById = async (id: string) => {
 export const getFolders = async () => {
   try {
     const { data } = await client.query({
-      query: gql`
-        query Folders {
-          getFolders {
-            id
-            name
-            updatedAt
-          }
-        }
-      `,
+      query: GET_FOLDERS,
     });
 
     return {

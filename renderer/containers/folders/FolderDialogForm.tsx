@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
 import TextField from '../../components/form/TextField';
 import { Folder, FolderInput } from '../../types/folders';
@@ -13,7 +13,6 @@ import { ADD_FOLDER, EDIT_FOLDER } from '../../controllers/folder';
 import { useMutation } from '@apollo/client';
 import styled from '@emotion/styled';
 import { DialogTitle } from '@mui/material';
-import { useRouter } from 'next/router';
 
 const getInitialValues = (data) => {
   if (!data) {
@@ -36,14 +35,15 @@ type Props = {
   folder?: Folder;
   open: boolean;
   onClose: () => void;
+  updateFoldersList?: (value?: boolean) => void;
 }
 
 const FolderDialogForm = ({
   folder, open, onClose,
+  updateFoldersList,
 }: Props) =>  {
   const [updateFolder, { loading: updateFolderLoading, error: updateFolderError }] = useMutation(EDIT_FOLDER);
-  const [createFolder, { loading: createFolderLoading, error: createFolderError, data }] = useMutation(ADD_FOLDER);
-  const route = useRouter();
+  const [createFolder, { loading: createFolderLoading, error: createFolderError, data: createdFolderData }] = useMutation(ADD_FOLDER);
 
   const form = useForm<FolderInput>({
     defaultValues: getInitialValues(folder),
@@ -56,27 +56,30 @@ const FolderDialogForm = ({
     handleSubmit,
   } = form;
 
+  useMemo(() => {
+    if (createdFolderData) {
+      updateFoldersList && updateFoldersList();
+    }
+  }, [createdFolderData])
+
   useEffect(() => {
-    if (isSubmitSuccessful) {
+  if (isSubmitSuccessful) {
       reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubmitSuccessful]);
+  }, []);
 
-  const onSubmit = async (values) => {
+  const onSubmit =async (values) => {
     if (folder) {
       updateFolder({ variables: { id: folder.id, values }});
     } else {
-
       createFolder({ variables: { values }});
     }
 
-    if (createFolderLoading || updateFolderLoading) return;
     if (updateFolderError || createFolderError) return;
+    if (createFolderLoading || updateFolderLoading) return;
+
     onClose();
-
-
-    route.push('/home');
   };
 
   return (

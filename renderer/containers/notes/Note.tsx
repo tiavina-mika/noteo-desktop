@@ -22,6 +22,7 @@ const Note = ({
 }: Props) => {
   const handleMouseEnter = () => {
     if (selectMode) return;
+    if (!toggleSelectMode) return;
     toggleSelectMode();
   }
 

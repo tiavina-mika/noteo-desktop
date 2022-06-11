@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 
 import PageLayout from '../components/layout/PageLayout';
 import { getNotesWithoutFolder, NOTES_WITHOUT_FOLDER, RECYCLE_BIN_NOTES } from '../controllers/note';
-import { getFolders } from '../controllers/folder';
+import { getFolders, GET_FOLDERS } from '../controllers/folder';
 import { Note as NoteType} from '../types/notes';
 import { Folder as FolderType } from '../types/folders';
 import FloatingButtonActions from '../components/FloatingButtonActions';
@@ -31,6 +31,7 @@ const Home = ({ notes, folders }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
   const [isNotesDeleted, setIsNotesDeleted] = useState<boolean>(false);
+  const [isNewFolderAdded, setINewFolderAdded] = useState<boolean>(false);
 
   const [
     moveNotesToRecycleBin,
@@ -42,6 +43,13 @@ const Home = ({ notes, folders }: Props) => {
   } = useQuery(
     NOTES_WITHOUT_FOLDER,
     { skip: !deletedNotes?.moveNotesToRecycleBin }
+  );
+
+  const {
+    data: newFoldersData, error: foldersError, loading: foldersLoading,
+  } = useQuery(
+    GET_FOLDERS,
+    { skip: !isNewFolderAdded }
   );
 
   const route = useRouter();
@@ -95,13 +103,31 @@ const Home = ({ notes, folders }: Props) => {
     return notes;
   }, [newNotesData, newNotesData, notes]);
 
+  const folderList = useMemo(() => {
+    if (newFoldersData) {
+      return newFoldersData.getFolders;
+    }
+
+    return folders;
+  }, [newFoldersData, newFoldersData, notes]);
+
+  const updateFoldersList = (value: boolean = true) => {
+    setINewFolderAdded(value);
+  }
+
   return (
-    <PageLayout withBackButton={false} loading={notesLoading} leftActions={<HomeAppBar />} elevate={false} bodySx={{ alignSelf: 'stretch' }}>
-        {[...folders, ...noteList].length > 0
+    <PageLayout
+      withBackButton={false}
+      loading={notesLoading || foldersLoading}
+      leftActions={<HomeAppBar updateFoldersList={updateFoldersList} />}
+      elevate={false}
+      bodySx={{ alignSelf: 'stretch' }}
+    >
+        {[...folderList, ...noteList].length > 0
           ? (
             <Masonry>
               <Fragment>
-                {folders.map((folder) => (
+                {folderList.map((folder) => (
                   <Folder key={folder.id} folder={folder} />
                 ))}
                 {noteList.map((note) => (

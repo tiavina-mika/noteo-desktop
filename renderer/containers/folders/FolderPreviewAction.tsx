@@ -5,7 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { Folder } from '../../types/folders';
 import { DELETE_FOLDER } from '../../controllers/folder';
-import { Fragment, MouseEvent, useState } from 'react';
+import { Fragment, MouseEvent, useCallback, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
 import FolderDialogForm from './FolderDialogForm';
@@ -38,13 +38,13 @@ const FolderPreviewAction = ({ folder }: Props) => {
     setAnchorEl(null);
   };
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
     deleteFolder({ variables: { id: folder.id }});
     handleClose();
 
     if (deleteFolderLoading) return;
     route.push('/home');
-  };
+  }, [deleteFolderLoading]);
 
   const handleFolderFormClickOpen = () => {
     setOpenFolderFormDialog(true);

@@ -31,7 +31,7 @@ const Folder = ({ folder }: Props) => {
           </Box>
           <Box>
             <Typography variant="subtitle1" color="text.secondary" fontWeight="bold">
-              {truncateString(folder.name, 20)}
+              {truncateString(folder.name, 30)}
             </Typography>
             {/* <Typography variant="body1" color="text.secondary" mt={3}>
               {dayjs(folder.updatedAt).format('DD MMMM YYYY')}
