@@ -66,6 +66,11 @@ const Home = ({ notes, folders }: Props) => {
     }
   };
 
+  const onCloseDrawer = () => {
+    setSelectedCards([]);
+    toggleSelectMode();
+  }
+
   return (
     <PageLayout withBackButton={false} loading={notesLoading}>
       <AppBar />
@@ -98,6 +103,7 @@ const Home = ({ notes, folders }: Props) => {
       <Drawer
         anchor="bottom"
         open={selectedCards.length > 0}
+        onClose={onCloseDrawer}
       >
         <Box display="flex" justifyContent="center" p={1.5}>
           <Stack direction="row" spacing={2.8}>

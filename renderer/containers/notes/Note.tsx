@@ -18,12 +18,9 @@ type Props = {
 
 const Note = ({
   note, onClick, onSelect,
-  toggleSelectMode, selectMode, 
+  toggleSelectMode, selectMode,
 }: Props) => {
-  const [showCheckbox, setShowCheckbox] = useState<boolean>(false);
-
   const handleMouseEnter = () => {
-    setShowCheckbox(true);
     if (selectMode) return;
     toggleSelectMode();
   }
@@ -44,7 +41,7 @@ const Note = ({
       onMouseEnter={handleMouseEnter}
       onMouseOut={handleMouseOut}
       onCheck={handleSelect(note.id)}
-      withCheckbox={selectMode || showCheckbox}
+      withCheckbox={selectMode}
     >
       <CardContent>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom fontWeight="bold">
