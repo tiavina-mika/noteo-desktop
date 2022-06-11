@@ -1,6 +1,8 @@
 import {
+  AppBar,
   Box,
   IconButton,
+  Toolbar,
   Typography,
 } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
@@ -29,19 +31,24 @@ type Props = {
   bodySx?: any;
   withBackButton?: boolean;
   loading?: boolean;
-  actions?: React.ReactNode;
+  leftActions?: React.ReactNode;
+  rightActions?: React.ReactNode;
   pageTitle?: string;
+  elevate?: boolean;
 }
 
 const PageLayout = ({
-  title, children, bodySx, actions,
+  title, children, bodySx, leftActions,
   pageTitle = "Noteo",
   withBackButton = true,
-  loading,
+  loading, rightActions,
+  elevate = true,
 }: Props) => {
   const route = useRouter();
 
   const goBack = () => route.back();
+
+  const elevateStyles = elevate ? {} : { boxShadow: 'none'};
 
   return (
     <Fragment>
@@ -49,28 +56,25 @@ const PageLayout = ({
         <title>{pageTitle}</title>
       </Head>
       {loading && <Loading type="progress" />}
+      <AppBar position="static" color="transparent" sx={{ ...elevateStyles }}>
+        <Toolbar>
+          {leftActions && leftActions}
+          {withBackButton && (
+            <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.backButton}>
+              <KeyboardBackspaceIcon />
+            </IconButton>
+          )}
+          {title && (
+            <Typography variant='h5' color="text.primary" sx={{ flex: 1, textAlign: 'center' }}>
+              {title}
+            </Typography>
+          )}
+          {rightActions && rightActions}
+        </Toolbar>
+      </AppBar>
       <Box display="flex" flexDirection="column" alignItems="center" px={10}>
-        <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch" flex={1}>
-          <Box display="flex" alignSelf="stretch" pt={1.2}>
-            {withBackButton && (
-              <IconButton aria-label="keybord-back-space" onClick={goBack} sx={sx.backButton}>
-                <KeyboardBackspaceIcon />
-              </IconButton>
-            )}
-            {title && (
-              <Typography variant='h5' color="text.primary" sx={{ flex: 1, textAlign: 'center' }}>
-                {title}
-              </Typography>
-            )}
-            {actions && (
-              <Box sx={sx.actions}>
-                {actions}
-              </Box>
-            )}
-          </Box>
-          <Box pt={5} sx={bodySx} alignSelf="stretch">
-            {children}        
-          </Box>
+        <Box pt={5} sx={bodySx} alignSelf="stretch">
+          {children}        
         </Box>
       </Box>
     </Fragment>

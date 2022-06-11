@@ -1,7 +1,10 @@
 import React, { Fragment, useState } from 'react';
 
-import { Box, Button, AppBar as MUIAppBar, Stack, Typography, IconButton } from '@mui/material';
+import {
+  Box, Button, AppBar as MUIAppBar, Stack, Typography, IconButton,
+} from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from 'next/router';
 
 import PageLayout from '../components/layout/PageLayout';
@@ -9,13 +12,12 @@ import { getNotesWithoutFolder, NOTES_WITHOUT_FOLDER, RECYCLE_BIN_NOTES } from '
 import { getFolders } from '../controllers/folder';
 import { Note as NoteType} from '../types/notes';
 import { Folder as FolderType } from '../types/folders';
-import AppBar from '../containers/home/AppBar';
 import FloatingButtonActions from '../components/FloatingButtonActions';
 import Folder from '../containers/folders/Folder';
 import Note from '../containers/notes/Note';
 import { useMutation, useQuery } from '@apollo/client';
-import { Masonry } from '@mui/lab';
-import CloseIcon from '@mui/icons-material/Close';
+import HomeAppBar from '../containers/home/HomeAppBar';
+import Masonry from '../components/Masonry';
 
 interface ISelectedCard {
   id: string;
@@ -81,17 +83,8 @@ const Home = ({ notes, folders }: Props) => {
   }
 
   return (
-    <PageLayout withBackButton={false} loading={notesLoading}>
-      <AppBar />
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <Masonry
-          columns={3}
-          spacing={2}
-          // for ssr
-          defaultHeight={300}
-          defaultColumns={3}
-          defaultSpacing={2}
-        >
+    <PageLayout withBackButton={false} loading={notesLoading} leftActions={<HomeAppBar />} elevate={false}>
+        <Masonry>
           <Fragment>
             {folders.map((folder) => (
               <Folder key={folder.id} folder={folder} />
@@ -108,7 +101,6 @@ const Home = ({ notes, folders }: Props) => {
             ))}
           </Fragment>
         </Masonry>
-      </Box>
          {selectedCards.length > 0 && (
           <MUIAppBar position="fixed" color="inherit" sx={{ top: 'auto', bottom: 0, backgroundColor: '#fff' }}>
             <Box display="flex" justifyContent="center" p={1.5}>

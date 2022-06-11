@@ -1,10 +1,9 @@
+import { Fragment, MouseEvent, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MenuIcon from '@mui/icons-material/Menu';
 
-import { MouseEvent, useState } from 'react';
-import { Box } from '@mui/system';
 import FolderDialogForm from '../folders/FolderDialogForm';
 import { useRouter } from 'next/router';
 
@@ -19,7 +18,7 @@ const ITEM_HEIGHT = 48;
 //   onClick: () => void;
 // }
 
-const AppBar = () => {
+const HomeAppBar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openFolderFormDialog, setOpenFolderFormDialog] = useState(false);
 
@@ -56,7 +55,7 @@ const AppBar = () => {
 
 
   return (
-    <Box>
+    <Fragment>
       <IconButton
         aria-label="more"
         id="folder-preview-button"
@@ -65,7 +64,7 @@ const AppBar = () => {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <MoreVertIcon />
+        <MenuIcon />
       </IconButton>
       <Menu
         id="note-preview-menu"
@@ -105,9 +104,9 @@ const AppBar = () => {
         onClose={handleFolderFormClose}
         open={openFolderFormDialog}
       />
-    </Box>
+    </Fragment>
   );
 };
 
-export default AppBar;
+export default HomeAppBar;
 
