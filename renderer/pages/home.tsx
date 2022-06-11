@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react';
 
-import { Box, Button, Drawer, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, AppBar as MUIAppBar, Stack, Typography, IconButton } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useRouter } from 'next/router';
 
@@ -15,6 +15,7 @@ import Folder from '../containers/folders/Folder';
 import Note from '../containers/notes/Note';
 import { useMutation, useQuery } from '@apollo/client';
 import { Masonry } from '@mui/lab';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface ISelectedCard {
   id: string;
@@ -28,8 +29,16 @@ const Home = ({ notes, folders }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
 
-  const [moveNotesToRecycleBin, { loading: moveNotesToRecycleBinLoading, error: moveNotesToRecycleBinError, data }] = useMutation(RECYCLE_BIN_NOTES);
-  const { data: newNotesData, error: notesError, loading: notesLoading } = useQuery(NOTES_WITHOUT_FOLDER, { skip: !data?.moveNotesToRecycleBin });
+  const [
+    moveNotesToRecycleBin,
+    { loading: moveNotesToRecycleBinLoading, error: moveNotesToRecycleBinError, data: deletedNotes }
+  ] = useMutation(RECYCLE_BIN_NOTES);
+  const {
+    data: newNotesData, error: notesError, loading: notesLoading,
+  } = useQuery(
+    NOTES_WITHOUT_FOLDER,
+    { skip: !deletedNotes?.moveNotesToRecycleBin }
+  );
 
   const route = useRouter();
 
@@ -66,7 +75,7 @@ const Home = ({ notes, folders }: Props) => {
     }
   };
 
-  const onCloseDrawer = () => {
+  const onCloseActionsDrawer = () => {
     setSelectedCards([]);
     toggleSelectMode();
   }
@@ -100,24 +109,26 @@ const Home = ({ notes, folders }: Props) => {
           </Fragment>
         </Masonry>
       </Box>
-      <Drawer
-        anchor="bottom"
-        open={selectedCards.length > 0}
-        onClose={onCloseDrawer}
-      >
-        <Box display="flex" justifyContent="center" p={1.5}>
-          <Stack direction="row" spacing={2.8}>
-            <Button type="button" onClick={handleDeleteAll} variant="text" sx={{ textTransform: 'capitalize'}}>
-              <Stack direction="column" alignItems="center">
-                <DeleteOutlineIcon />
-                <Typography>
-                  Delete
-                </Typography>
-              </Stack>              
-            </Button>
-          </Stack>          
-        </Box>
-      </Drawer>
+         {selectedCards.length > 0 && (
+          <MUIAppBar position="fixed" color="inherit" sx={{ top: 'auto', bottom: 0, backgroundColor: '#fff' }}>
+            <Box display="flex" justifyContent="center" p={1.5}>
+              <Stack direction="row" spacing={2.8}>
+                <Button type="button" onClick={handleDeleteAll} variant="text" sx={{ textTransform: 'capitalize'}}>
+                  <Stack direction="column" alignItems="center">
+                    <DeleteOutlineIcon />
+                    <Typography>
+                      Delete
+                    </Typography>
+                  </Stack>              
+                </Button>
+              </Stack>          
+            </Box>
+            <IconButton sx={{ position: 'absolute', right: 20, bottom: 20 }} onClick={onCloseActionsDrawer}>
+              <CloseIcon />
+            </IconButton>
+          </MUIAppBar>
+         )}
+
       <FloatingButtonActions addUrl="/notes/add" />
     </PageLayout>
   );

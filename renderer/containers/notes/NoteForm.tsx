@@ -29,9 +29,13 @@ const getInitialValues = (data) => {
 type Props = {
   note?: Note;
   folder?: Folder;
+  formId?: string;
+  onSubmit?: () => void;
 }
 
-const NoteForm = ({ note, folder }: Props) => {
+const NoteForm = ({
+  note, folder, formId, onSubmit
+}: Props) => {
   const route = useRouter();
 
   const [updateNote, { loading: updateNoteLoading, error: updateNoteError }] = useMutation(EDIT_NOTE);
@@ -69,6 +73,11 @@ const NoteForm = ({ note, folder }: Props) => {
 
     if (updateNoteError || createNoteError) return;
 
+    if (onSubmit && (!createNoteLoading || !updateNoteLoading)) {
+      onSubmit();
+      return;
+    }
+  
     route.push('/home');
   };
 
@@ -79,13 +88,13 @@ const NoteForm = ({ note, folder }: Props) => {
         noValidate
         autoComplete='off'
         onSubmit={handleSubmit(onSubmitHandler)}
+        id={formId || 'note-form'}
       >
         <TextField
           sx={{ mb: 2 }}
           name="title"
           label='Title'
           fullWidth
-          required
         />
 
         <TextField
@@ -93,20 +102,22 @@ const NoteForm = ({ note, folder }: Props) => {
           name="content"
           label='Content'
           fullWidth
-          required
           multiline
           rows={6}
         />
 
-        <LoadingButton
-          variant='contained'
-          fullWidth
-          type='submit'
-          loading={note ? updateNoteLoading : createNoteLoading}
-          sx={{ py: '0.8rem', mt: '1rem' }}
-        >
-          Save
-        </LoadingButton>
+        {/* use the local id if no id is defined */}
+        {!formId && (
+          <LoadingButton
+            variant='contained'
+            fullWidth
+            type='submit'
+            loading={note ? updateNoteLoading : createNoteLoading}
+            sx={{ py: '0.8rem', mt: '1rem' }}
+          >
+            Save
+          </LoadingButton>
+        )}
       </Box>
       <Snackbar
         open={!!updateNoteError}
