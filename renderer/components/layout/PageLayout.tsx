@@ -42,7 +42,7 @@ const PageLayout = ({
   pageTitle = "Noteo",
   withBackButton = true,
   loading, rightActions,
-  elevate = true,
+  elevate = false,
 }: Props) => {
   const route = useRouter();
 
@@ -73,7 +73,7 @@ const PageLayout = ({
         </Toolbar>
       </AppBar>
       <Box display="flex" flexDirection="column" alignItems="center" px={10}>
-        <Box pt={5} sx={bodySx} alignSelf="stretch">
+        <Box pt={5} sx={bodySx}>
           {children}        
         </Box>
       </Box>

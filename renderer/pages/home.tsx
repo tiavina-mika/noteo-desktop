@@ -95,7 +95,7 @@ const Home = ({ notes, folders }: Props) => {
   }, [newNotesData, newNotesData, notes]);
 
   return (
-    <PageLayout withBackButton={false} loading={notesLoading} leftActions={<HomeAppBar />} elevate={false}>
+    <PageLayout withBackButton={false} loading={notesLoading} leftActions={<HomeAppBar />} elevate={false} bodySx={{ alignSelf: 'stretch' }}>
         <Masonry>
           <Fragment>
             {folders.map((folder) => (
