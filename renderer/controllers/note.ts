@@ -2,6 +2,80 @@ import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
 
+
+export const NOTES_WITHOUT_FOLDER = gql`
+query GetNotesWithoutFolder {
+ getNotesWithoutFolder {
+   id
+   title
+   content
+   updatedAt
+ }
+}
+
+`;
+
+/**
+* create note
+* @var title string
+* @var content string
+*/
+export const EDIT_NOTE = gql`
+ mutation UpdateNote($id: String!, $values: UpdateNoteInput!) {
+   updateNote(id: $id, values: $values) {
+     id
+     title
+     content
+     createdAt
+     updatedAt
+   }
+ }
+`;
+
+/**
+* create note
+* @var title string
+* @var content string
+*/
+export const ADD_NOTE = gql`
+ mutation addNote($values: CreateNoteInput!) {
+   createNote(values: $values) {
+     id
+     title
+     content
+     createdAt
+     updatedAt
+   }
+ }
+`;
+
+export const DELETE_NOTE = gql`
+ mutation DeleteNote($id: String!) {
+   deleteNote(id: $id) {
+     id
+   }
+ }
+`;
+
+export const RECYCLE_BIN_NOTE = gql`
+ mutation MoveNoteToRecycleBin($id: String!, $value: Boolean!) {
+   moveNoteToRecycleBin(id: $id, value: $value) {
+     id
+   }
+ }
+`;
+
+/**
+* set deleted field to true for the list of ids
+* @var ids string[]
+* @var value boolean
+*/
+export const RECYCLE_BIN_NOTES = gql`
+mutation MoveNotesToRecycleBin($values: RecycleBinNotesInput!) {
+ moveNotesToRecycleBin(values: $values)
+}
+`;
+
 /**
  * get single note by its id
  * @param id 
@@ -97,16 +171,7 @@ export const getNotes = async () => {
  export const getNotesWithoutFolder = async () => {
   try {
     const { data } = await client.query({
-      query: gql`
-        query GetNotesWithoutFolder {
-          getNotesWithoutFolder {
-            id
-            title
-            content
-            updatedAt
-          }
-        }
-      `,
+      query: NOTES_WITHOUT_FOLDER,
     });
 
     return {
@@ -145,42 +210,3 @@ export const getNotes = async () => {
   }
 }
 
-export const EDIT_NOTE = gql`
-  mutation UpdateNote($id: String!, $values: UpdateNoteInput!) {
-    updateNote(id: $id, values: $values) {
-      id
-      title
-      content
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-export const ADD_NOTE = gql`
-  mutation addNote($values: CreateNoteInput!) {
-    createNote(values: $values) {
-      id
-      title
-      content
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-export const DELETE_NOTE = gql`
-  mutation DeleteNote($id: String!) {
-    deleteNote(id: $id) {
-      id
-    }
-  }
-`;
-
-export const RECYCLE_BIN_NOTE = gql`
-  mutation MoveToRecycleBin($id: String!, $value: Boolean!) {
-    moveToRecycleBin(id: $id, value: $value) {
-      id
-    }
-  }
-`;

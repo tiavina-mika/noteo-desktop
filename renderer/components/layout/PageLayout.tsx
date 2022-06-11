@@ -8,6 +8,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
 import Head from 'next/head';
+import Loading from '../Loading';
 
 const sx = {
   backButton: (theme) => ({
@@ -27,6 +28,7 @@ type Props = {
   children: React.ReactNode;
   bodySx?: any;
   withBackButton?: boolean;
+  loading?: boolean;
   actions?: React.ReactNode;
   pageTitle?: string;
 }
@@ -34,7 +36,8 @@ type Props = {
 const PageLayout = ({
   title, children, bodySx, actions,
   pageTitle = "Noteo",
-  withBackButton = true
+  withBackButton = true,
+  loading,
 }: Props) => {
   const route = useRouter();
 
@@ -45,6 +48,7 @@ const PageLayout = ({
       <Head>
         <title>{pageTitle}</title>
       </Head>
+      {loading && <Loading type="progress" />}
       <Box display="flex" flexDirection="column" alignItems="center" px={10}>
         <Box display="flex" flexDirection="column" alignItems="center" alignSelf="stretch" flex={1}>
           <Box display="flex" alignSelf="stretch" pt={1.2}>

@@ -25,7 +25,7 @@ const NotePreviewAction = ({ note }: Props) => {
   const open = Boolean(anchorEl);
   const route = useRouter();
 
-  const [moveToRecycleBin, { loading: moveToRecycleBinLoading, error: moveToRecycleBinError, data }] = useMutation(RECYCLE_BIN_NOTE);
+  const [moveNoteToRecycleBin, { loading: moveNoteToRecycleBinLoading, error: moveNoteToRecycleBinError }] = useMutation(RECYCLE_BIN_NOTE);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,8 +36,8 @@ const NotePreviewAction = ({ note }: Props) => {
   };
 
   const onDelete = () => {
-    moveToRecycleBin({ variables: { id: note.id, value: true }});
-    if (moveToRecycleBinLoading) return;
+    moveNoteToRecycleBin({ variables: { id: note.id, value: true }});
+    if (moveNoteToRecycleBinLoading) return;
     handleClose();
     route.push('/home');
   };

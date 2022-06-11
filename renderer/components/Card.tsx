@@ -18,11 +18,20 @@ type Props = {
   children: ReactNode;
   sx: any;
   onClick?: (id?: any) => void;
+  onMouseEnter?: (id?: any) => void;
+  onMouseOut?: (id?: any) => void;
 }
 
-const Card = ({ children, sx, onClick }: Props) => {
+const Card = ({
+  children, sx, onClick, onMouseEnter, onMouseOut,
+}: Props) => {
   return (
-      <CustomCard sx={sx} onClick={onClick}>
+      <CustomCard
+        sx={sx}
+        onClick={onClick}
+        onMouseOver={onMouseEnter}
+        onMouseLeave={onMouseOut}
+      >
         {children}
       </CustomCard>       
   );
