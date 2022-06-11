@@ -14,6 +14,7 @@ import FloatingButtonActions from '../components/FloatingButtonActions';
 import Folder from '../containers/folders/Folder';
 import Note from '../containers/notes/Note';
 import { useMutation, useQuery } from '@apollo/client';
+import { Masonry } from '@mui/lab';
 
 interface ISelectedCard {
   id: string;
@@ -69,7 +70,14 @@ const Home = ({ notes, folders }: Props) => {
     <PageLayout withBackButton={false} loading={notesLoading}>
       <AppBar />
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Grid container spacing={2} justifyContent="center">
+        <Masonry
+          columns={3}
+          spacing={2}
+          // for ssr
+          defaultHeight={300}
+          defaultColumns={3}
+          defaultSpacing={2}
+        >
           <Fragment>
             {folders.map((folder) => (
               <Folder key={folder.id} folder={folder} />
@@ -85,7 +93,7 @@ const Home = ({ notes, folders }: Props) => {
               />
             ))}
           </Fragment>
-        </Grid>
+        </Masonry>
       </Box>
       <Drawer
         anchor="bottom"

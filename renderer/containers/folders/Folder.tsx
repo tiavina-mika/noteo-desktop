@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
-import { Box, CardContent, Grid, Stack } from '@mui/material';
+import { Box, CardContent, Stack } from '@mui/material';
 
 import { truncateString } from '../../utils/utils';
 import { Folder } from '../../types/folders';
@@ -20,8 +20,7 @@ const Folder = ({ folder }: Props) => {
   };
 
   return (
-    <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center">
-      <Card sx={{ alignSelf: 'stretch' }} onClick={handleCardClick}>
+      <Card sx={{ alignSelf: 'stretch', height: 75 }} onClick={handleCardClick}>
         <CardContent>
         <Stack
           direction="row"
@@ -41,7 +40,6 @@ const Folder = ({ folder }: Props) => {
         </Stack>
         </CardContent>
       </Card> 
-    </Grid>
   );
 };
 

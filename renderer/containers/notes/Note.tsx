@@ -1,8 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { CardContent, Grid, Checkbox } from '@mui/material';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import Favorite from '@mui/icons-material/Favorite';
+import { CardContent } from '@mui/material';
 
 import { truncateString } from '../../utils/utils';
 import { notes } from '../../utils/data';
@@ -26,6 +24,7 @@ const Note = ({
 
   const handleMouseEnter = () => {
     setShowCheckbox(true);
+    if (selectMode) return;
     toggleSelectMode();
   }
 
@@ -39,35 +38,26 @@ const Note = ({
   }
 
   return (
-    <Grid item xs={6} sm={6} md={4} lg={3} justifyContent="center" onMouseEnter={handleMouseEnter} onMouseOut={handleMouseOut}>
-      <Card sx={{ alignSelf: 'stretch', position: 'relative' }} onClick={onClick} >
-        <CardContent>
-          <Typography variant="subtitle1" color="text.secondary" gutterBottom fontWeight="bold">
-            {note.title}
-          </Typography>
-          <Typography variant="body1" color="text.secondary" gutterBottom>
-            {truncateString(note.content, 100)}
-          </Typography>
-          <Typography variant="body1" color="text.secondary" mt={3}>
-            {dayjs(note.updatedAt).format('DD MMMM YYYY')}
-          </Typography>
-          {(selectMode || showCheckbox) && (
-            <Checkbox
-              inputProps={{ 'aria-label': 'Checkbox ' + note.id }}
-              icon={<FavoriteBorder />}
-              checkedIcon={<Favorite />}
-              onChange={handleSelect(note.id)}
-              onClick={(e) => e.stopPropagation()}
-              sx={{
-                position: 'absolute',
-                bottom: 10,
-                right: 10,
-              }}
-            />
-          )}
-        </CardContent>
-      </Card> 
-    </Grid>
+    <Card
+      sx={{ alignSelf: 'stretch', position: 'relative' }}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseOut={handleMouseOut}
+      onCheck={handleSelect(note.id)}
+      withCheckbox={selectMode || showCheckbox}
+    >
+      <CardContent>
+        <Typography variant="subtitle1" color="text.secondary" gutterBottom fontWeight="bold">
+          {note.title}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" gutterBottom>
+          {truncateString(note.content, 100)}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" mt={3}>
+          {dayjs(note.updatedAt).format('DD MMMM YYYY')}
+        </Typography>
+      </CardContent>
+    </Card> 
   );
 };
 
