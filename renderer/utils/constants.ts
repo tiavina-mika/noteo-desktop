@@ -15,3 +15,5 @@ export const PATH_NAMES = {
 export const IMAGE_BANNER = {
   default: '/images/app-main-image.png',
 };
+
+export const DEFAULT_PER_PAGE: number = 30;

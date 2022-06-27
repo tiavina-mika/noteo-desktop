@@ -12,3 +12,12 @@ export interface AppReducer {
 	message: string;
 	appSnackBar: AppSnackBar;
 }
+
+export interface IPaginationInput {
+  search?: string;
+  availableSearch?: string[];
+  page?: number;
+  perPage?: number;
+  sort?: string;
+  availableSort?: string[];
+}

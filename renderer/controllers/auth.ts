@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 import client from "../apollo-client";
+import { setRequestHeader } from "../utils/utils";
 
 export const SIGNUP = gql`
   mutation Signup($values: CreateUserInput!) {
@@ -44,10 +45,11 @@ export const PROFILE = gql`
  * get the current logged in user
  * @returns 
  */
- export const getCurrentUser = async () => {
+ export const getCurrentUser = async (sessionToken) => {
   try {
     const { data } = await client.query({
       query: PROFILE,
+      context: setRequestHeader({ sessionToken })
     });
 
     return data.profile;

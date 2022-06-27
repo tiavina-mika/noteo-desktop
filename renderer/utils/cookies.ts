@@ -66,3 +66,8 @@ export const clearCookies = (res, cookiesName: string[] = COOKIES) => {
     }),
   );
 };
+
+export const getClientSessionToken = (): string => {
+  const token = getClientCookie(SESSION_TOKEN_NAME);
+  return token;
+}

@@ -4,8 +4,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useRouter } from 'next/router';
 
 import PageLayout from '../components/layout/PageLayout';
-import { getNotesWithoutFolder, NOTES_WITHOUT_FOLDER, RECYCLE_BIN_NOTES } from '../controllers/note';
-import { getFoldersWithNotesCount, GET_FOLDERS_WITH_NOTES_COUNT } from '../controllers/folder';
+import { getNotesByUser, NOTES_WITHOUT_FOLDER, RECYCLE_BIN_NOTES } from '../controllers/note';
+import { getUserFoldersWithNotesCount, FOLDERS_WITH_NOTES_COUNT } from '../controllers/folder';
 import { Note as NoteType} from '../types/notes';
 import { Folder as FolderType } from '../types/folders';
 import FloatingButtonActions from '../components/FloatingButtonActions';
@@ -16,6 +16,7 @@ import HomeAppBar from '../containers/home/HomeAppBar';
 import Masonry from '../components/Masonry';
 import ActionsDrawer from '../components/ActionsDrawer';
 import EmptyNotes from '../containers/notes/EmptyNotes';
+import withSession from '../middleware/withSession';
 
 interface ISelectedCard {
   id: string;
@@ -48,10 +49,9 @@ const Home = ({ notes, folders }: Props) => {
   const {
     data: newFoldersData, error: foldersError, loading: foldersLoading,
   } = useQuery(
-    GET_FOLDERS_WITH_NOTES_COUNT,
+    FOLDERS_WITH_NOTES_COUNT,
     { skip: !isNewFolderAdded }
   );
-  console.log('newFoldersData: ', newFoldersData);
 
   const route = useRouter();
 
@@ -129,7 +129,7 @@ const Home = ({ notes, folders }: Props) => {
             <Masonry>
               <Fragment>
                 {folderList.map((folder) => (
-                  <Folder key={folder._id} folder={folder} />
+                  <Folder key={folder.id} folder={folder} />
                 ))}
                 {noteList.map((note) => (
                   <Note
@@ -163,16 +163,16 @@ const Home = ({ notes, folders }: Props) => {
   );
 };
 
-export const getServerSideProps = async () => {
-  const { notes } = await getNotesWithoutFolder();
-  const { folders } = await getFoldersWithNotesCount();
+export const getServerSideProps = withSession(async ({ sessionToken }) => {
+  const noteResult = await getNotesByUser({ withFolder: false, sessionToken })
+  const folderResult = await getUserFoldersWithNotesCount({ sessionToken });
 
   return {
     props: {
-      notes,
-      folders,
+      notes: noteResult.data,
+      folders: folderResult.data,
     }
   };
-};
+});
 
 export default Home;

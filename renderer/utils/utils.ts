@@ -1,3 +1,4 @@
+import { IRequest, IRequestHeadersParams } from "../types/request";
 import { APP_NAME } from "./constants";
 import { SEO } from "./texting";
 
@@ -41,3 +42,12 @@ export const formatPageTitle = (title: string): string => {
  * @returns 
  */
 export const onError = (error) => error;
+
+export const setRequestHeader = ({ sessionToken, lang = 'en' }: IRequestHeadersParams): IRequest => {
+  return {
+    headers: {
+        Authorization: sessionToken ? `Bearer ${sessionToken}` : '',
+        'x-custom-lang': lang,
+    }
+  };
+}

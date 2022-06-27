@@ -1,6 +1,9 @@
 import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
+import { FolderListInput, FoldersResult } from '../types/folders';
+import { DEFAULT_PER_PAGE } from '../utils/constants';
+import { setRequestHeader } from '../utils/utils';
 
 export const GET_FOLDERS = gql`
   query Folders {
@@ -24,13 +27,21 @@ export const GET_FOLDERS = gql`
 //     ]
 //   }
 // }
-export const GET_FOLDERS_WITH_NOTES_COUNT = gql`
-  query GetFoldersWithNotesCount {
-    getFoldersWithNotesCount {
-      id
-      notesCount
-      name
-      updatedAt
+export const FOLDERS_WITH_NOTES_COUNT = gql`
+  query GetUserFoldersWithNotesCount ($options: FolderListInput!) {
+    getUserFoldersWithNotesCount (options: $options) {
+      data {
+        id
+        notesCount
+        name
+        updatedAt
+      }
+      totalData
+      totalPage
+      currentPage
+      perPage
+      availableSearch
+      availableSort
     }
   }
 `;
@@ -82,17 +93,37 @@ export const getFolders = async () => {
   }
 }
 
-export const getFoldersWithNotesCount = async () => {
+// export const getFoldersWithNotesCount = async () => {
+//   try {
+//     const { data } = await client.query({
+//       query: GET_FOLDERS_WITH_NOTES_COUNT,
+//     });
+
+//     return {
+//       folders: data.getFoldersWithNotesCount
+//     }
+//   } catch (error) {
+//     console.log('controller.folder.getFolders error: ', error.massage);
+//   }
+// }
+
+export const getUserFoldersWithNotesCount = async ({
+  search,
+  page = 1,
+  perPage = DEFAULT_PER_PAGE,
+  sort = 'updatedAt@desc',
+  sessionToken
+}: FolderListInput): Promise<FoldersResult> => {
   try {
     const { data } = await client.query({
-      query: GET_FOLDERS_WITH_NOTES_COUNT,
+      query: FOLDERS_WITH_NOTES_COUNT,
+      variables: { options: { search, page, perPage, sort }},
+      context: setRequestHeader({ sessionToken })
     });
 
-    return {
-      folders: data.getFoldersWithNotesCount
-    }
+    return data.getUserFoldersWithNotesCount
   } catch (error) {
-    console.log('controller.folder.getFolders error: ', error.massage);
+    console.log('controller.folder.getUserFoldersWithNotesCount error: ', error.massage);
   }
 }
 

@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 import { noteSchema } from "../utils/validations";
+import { IPaginationInput } from "./app";
+import { IRequestHeadersParams } from "./request";
+import { IResponsePaging } from "./response";
 
 export interface Note {
   __typename: 'Note',
@@ -23,4 +26,12 @@ export interface EditNoteInput {
   id: any;
   values: NoteInput;
 };
+
+export interface NoteListInput extends IPaginationInput, IRequestHeadersParams {
+  withFolder?: boolean;
+}
+
+export interface NotesResult extends IResponsePaging {
+  data: Note[],
+}
 

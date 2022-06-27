@@ -1,8 +1,29 @@
 import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
+import { NoteListInput, NotesResult } from '../types/notes';
+import { DEFAULT_PER_PAGE } from '../utils/constants';
+import { setRequestHeader } from '../utils/utils';
 
-
+export const NOTES = gql`
+  query GetNotesByUser($options: NoteListInput!) {
+    getNotesByUser (options: $options) {
+      data {
+        id
+        title
+        content
+        updatedAt
+        folder { name }
+      }
+      totalData
+      totalPage
+      currentPage
+      perPage
+      availableSearch
+      availableSort
+    }
+  }
+`
 export const NOTES_WITHOUT_FOLDER = gql`
   query GetNotesWithoutFolder {
     getNotesWithoutFolder {
@@ -157,46 +178,86 @@ export const getNotesByFolderId = async (folderId: string) => {
  * get all notes
  * @returns 
  */
-export const getNotes = async () => {
-  try {
-    const { data } = await client.query({
-      query: gql`
-        query GetNotes {
-          getNotes {
-            id
-            title
-            content
-            updatedAt
-          }
-        }
-      `,
-    });
+// export const getNotes = async () => {
+//   try {
+//     const { data } = await client.query({
+//       query: gql`
+//         query GetNotes {
+//           getNotes {
+//             id
+//             title
+//             content
+//             updatedAt
+//           }
+//         }
+//       `,
+//     });
 
-    return {
-      notes: data.getNotes
-    }
-  } catch (error) {
-    console.log('controller.note.getNotes error: ', error.massage);
-  }
-}
+//     return {
+//       notes: data.getNotes
+//     }
+//   } catch (error) {
+//     console.log('controller.note.getNotes error: ', error?.massage);
+//   }
+// }
 
 /**
  * get all notes
  * @returns 
  */
- export const getNotesWithoutFolder = async () => {
+//  export const getNotesWithoutFolder = async () => {
+//   try {
+//     const { data } = await client.query({
+//       query: NOTES_WITHOUT_FOLDER,
+//     });
+
+//     return {
+//       notes: data.getNotesWithoutFolder
+//     }
+//   } catch (error) {
+//     console.log('controller.note.getNotes error: ', error.massage);
+//   }
+// }
+
+export const getNotesByUser = async ({
+  search,
+  page = 1,
+  perPage = DEFAULT_PER_PAGE,
+  sort = 'updatedAt@desc',
+  withFolder,
+  sessionToken,
+}: NoteListInput): Promise<NotesResult> => {
   try {
     const { data } = await client.query({
-      query: NOTES_WITHOUT_FOLDER,
+      query: NOTES,
+      variables: { options: { search, page, perPage, sort, withFolder }},
+      context: setRequestHeader({ sessionToken })
     });
 
-    return {
-      notes: data.getNotesWithoutFolder
-    }
+    return data.getNotesByUser
   } catch (error) {
     console.log('controller.note.getNotes error: ', error.massage);
   }
 }
+
+// query GetNotesByUser($options: NoteListInput!) {
+//   getNotesByUser (options: $options) {
+//     data {
+//       id
+//       title
+//       content
+//       updatedAt
+//       user { firstName }
+//       folder { name }
+//     }
+//     totalData
+//     totalPage
+//     currentPage
+//     perPage
+//     availableSearch
+//     availableSort
+//   }
+// }
 
 /**
  * get notes with deleted true
