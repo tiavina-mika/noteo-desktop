@@ -1,4 +1,5 @@
 import CreateNotePage from '../../containers/notes/CreateNotePage';
+import withSession from '../../middleware/withSession';
 
 const Add = () => {
   return (
@@ -6,5 +7,10 @@ const Add = () => {
   );
 };
 
-export default Add;
+export const getServerSideProps = withSession(async () => {
+  return {
+    props: {},
+  };
+});
 
+export default Add;

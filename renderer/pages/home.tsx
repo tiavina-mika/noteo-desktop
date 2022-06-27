@@ -169,8 +169,8 @@ export const getServerSideProps = withSession(async ({ sessionToken }) => {
 
   return {
     props: {
-      notes: noteResult.data,
-      folders: folderResult.data,
+      notes: noteResult?.data || [],
+      folders: folderResult?.data || [],
     }
   };
 });

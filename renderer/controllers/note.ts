@@ -118,25 +118,28 @@ mutation MoveNotesToRecycleBin($values: RecycleBinNotesInput!) {
  * @param id 
  * @returns 
  */
-export const getNoteById = async (id: string) => {
+export const getNoteById = async (id: string, sessionToken: string) => {
   try {
     const { data } = await client.query({
       query: gql`
-      query GetNoteById($id: String!) {
-        getNoteById(id: $id) {
-          id
-          title
-          content
+        query GetUserNoteById($id: String!) {
+          getUserNoteById(id: $id) {
+            id
+            title
+            content
+            createdAt
+            updatedAt
+          }
         }
-      }
       `,
       variables: {
         id,
-      }
+      },
+      context: setRequestHeader({ sessionToken })
     });
 
     return {
-      note: data.getNoteById
+      note: data.getUserNoteById
     }
   } catch (error) {
     console.log('controller.note.getNoteById error: ', error.massage);

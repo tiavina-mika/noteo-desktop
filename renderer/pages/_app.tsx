@@ -9,6 +9,7 @@ import { Box, styled } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import client from '../apollo-client';
 import { ApolloProvider } from '@apollo/client';
+import AppProvider from '../components/providers/AppProvider';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -42,9 +43,14 @@ const MyApp = (props: AppProps) => {
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <AppProvider
+              sessionToken={pageProps.__sessionToken}
+              pathname={pageProps._pathname}
+            >
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </AppProvider>
           </ThemeProvider>
         </StyledEngineProvider>         
       </ApolloProvider>
