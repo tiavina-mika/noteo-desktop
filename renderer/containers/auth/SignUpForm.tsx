@@ -43,15 +43,14 @@ const SignUpForm = ({
     const newValues = { ...values };
     delete newValues.passwordConfirmation;
 
-    signup({ variables: { values: newValues }});
+    const result = await signup({ variables: { values: newValues }});
+    if (!result?.data) return;
 
-    if (error || loading) return;
 
     if (onSubmit) {
       onSubmit();
     }
 
-    if (!data) return;
     route.push(PATH_NAMES.login);
   };
 

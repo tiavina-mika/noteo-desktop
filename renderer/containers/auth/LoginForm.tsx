@@ -23,7 +23,7 @@ const LoginForm = ({
 }: Props) => {
   const route = useRouter();
 
-  const [login, { loading, error, data }] = useMutation(LOGIN, { onError });
+  const [login, { loading, error }] = useMutation(LOGIN, { onError });
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -41,14 +41,11 @@ const LoginForm = ({
   }, [isSubmitSuccessful]);
 
   const onSubmitHandler: SubmitHandler<LoginInput> = async (values) => {
-    login({ variables: { values }});
+    const result = await login({ variables: { values }});
 
-    if (data) {
-      setClientCookie(SESSION_TOKEN_NAME, data.login.token, SESSION_DURATION)
-    }
+    if (!result.data) return;
+    setClientCookie(SESSION_TOKEN_NAME, result.data.login.token, SESSION_DURATION)
 
-    if (error || loading) return;
-  
     if (onSubmit) {
       onSubmit();
       return;
