@@ -2,6 +2,7 @@ import { getCurrentUser } from '../controllers/auth';
 import {
   COOKIES, PATH_NAMES, SESSION_TOKEN_NAME,
 } from '../utils/constants';
+import { clearCookies }from '../utils/cookies';
 
 const withSession = (fn) => async ({
   req, res, resolvedUrl, ...others
@@ -14,6 +15,13 @@ const withSession = (fn) => async ({
   if (sessionToken) {
     try {
       currentUser = await getCurrentUser(sessionToken);
+
+      if (!currentUser) {
+        clearCookies(res, [SESSION_TOKEN_NAME])
+        return {
+          redirect: { destination: PATH_NAMES.login, permanent: false },
+        }
+      }
     } catch (e) {
       if (e.response?.data?.code === 209) {
         COOKIES.forEach((cookie) => res.clearCookie(cookie, { path: '/' }));
@@ -43,8 +51,11 @@ const withSession = (fn) => async ({
 
   const props = {
     __currentUser: currentUser,
+    __sessionToken: sessionToken,
+    _pathname: resolvedUrl,
     ...result.props,
   };
+
   // props used directly in main _app
   return {
     ...result,
