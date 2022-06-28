@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -13,6 +13,8 @@ import { ADD_FOLDER, EDIT_FOLDER } from '../../controllers/folder';
 import { useMutation } from '@apollo/client';
 import styled from '@emotion/styled';
 import { DialogTitle } from '@mui/material';
+import { AppContext } from '../../components/providers/AppProvider';
+import { setRequestHeader } from '../../utils/utils';
 
 const getInitialValues = (data) => {
   if (!data) {
@@ -35,15 +37,26 @@ type Props = {
   folder?: Folder;
   open: boolean;
   onClose: () => void;
-  updateFoldersList?: (value?: boolean) => void;
+  reloadFolders?: () => void;
 }
 
 const FolderDialogForm = ({
   folder, open, onClose,
-  updateFoldersList,
+  reloadFolders,
 }: Props) =>  {
-  const [updateFolder, { loading: updateFolderLoading, error: updateFolderError }] = useMutation(EDIT_FOLDER);
-  const [createFolder, { loading: createFolderLoading, error: createFolderError, data: createdFolderData }] = useMutation(ADD_FOLDER);
+	const { sessionToken } = useContext(AppContext);
+
+  // folder edition
+  const [
+    updateFolder,
+    { loading: updateFolderLoading, error: updateFolderError }
+  ] = useMutation(EDIT_FOLDER, { context: setRequestHeader({ sessionToken }) });
+
+  // folder creation
+  const [
+    createFolder,
+    { loading: createFolderLoading, error: createFolderError, data: createdFolderData }
+  ] = useMutation(ADD_FOLDER, { context: setRequestHeader({ sessionToken }) });
 
   const form = useForm<FolderInput>({
     defaultValues: getInitialValues(folder),
@@ -56,30 +69,27 @@ const FolderDialogForm = ({
     handleSubmit,
   } = form;
 
-  useMemo(() => {
-    if (createdFolderData) {
-      updateFoldersList && updateFoldersList();
-    }
-  }, [createdFolderData])
-
   useEffect(() => {
-  if (isSubmitSuccessful) {
-      reset();
-    }
+    if (!isSubmitSuccessful) return;
+    reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onSubmit =async (values) => {
+  const onSubmit = async (values) => {
+    let result;
     if (folder) {
-      updateFolder({ variables: { id: folder.id, values }});
+      result = await updateFolder({ variables: { id: folder.id, values }});
     } else {
-      createFolder({ variables: { values }});
+      result = await createFolder({ variables: { values }});
     }
 
     if (updateFolderError || createFolderError) return;
     if (createFolderLoading || updateFolderLoading) return;
 
     onClose();
+
+    if (!result) return;
+    reloadFolders();
   };
 
   return (

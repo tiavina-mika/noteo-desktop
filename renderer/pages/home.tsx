@@ -7,11 +7,11 @@ import PageLayout from '../components/layout/PageLayout';
 import { getNotesByUser, NOTES, MANY_RECYCLE_BIN_NOTES } from '../controllers/note';
 import { getUserFoldersWithNotesCount, FOLDERS_WITH_NOTES_COUNT } from '../controllers/folder';
 import { Note as INote, NoteListInput } from '../types/notes';
-import { Folder as IFolder } from '../types/folders';
+import { Folder as IFolder, FolderListInput } from '../types/folders';
 import FloatingButtonActions from '../components/FloatingButtonActions';
 import Folder from '../containers/folders/Folder';
 import Note from '../containers/notes/Note';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import HomeAppBar from '../containers/home/HomeAppBar';
 import Masonry from '../components/Masonry';
 import ActionsDrawer from '../components/ActionsDrawer';
@@ -19,6 +19,7 @@ import EmptyNotes from '../containers/notes/EmptyNotes';
 import withSession from '../middleware/withSession';
 import { AppContext } from '../components/providers/AppProvider';
 import { setRequestHeader } from '../utils/utils';
+import { DEFAULT_SORT } from '../utils/constants';
 
 interface ISelectedCard {
   id: string;
@@ -28,16 +29,17 @@ interface ISelectedCard {
 type Props = {
   notes: INote[];
   folders: IFolder[];
-  notesInput: Pick<NoteListInput, 'page' | 'perPage' | 'withFolder'>
+  notesInput: Pick<NoteListInput, 'page' | 'perPage' | 'withFolder' | 'sort'>;
+  foldersInput: Pick<FolderListInput, 'page' | 'perPage' | 'sort'>;
 }
 
 const Home = ({
   notes, folders, notesInput,
+  foldersInput,
 }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
   const [isNotesDeleted, setIsNotesDeleted] = useState<boolean>(false);
-  const [isNewFolderAdded, setINewFolderAdded] = useState<boolean>(false);
 
 	const { sessionToken } = useContext(AppContext);
 
@@ -56,11 +58,13 @@ const Home = ({
     },
   );
 
-  const {
-    data: newFoldersData, error: foldersError, loading: foldersLoading,
-  } = useQuery(
+  const [getFoldersQuery, { loading: foldersLoading, error: foldersError, data: newFoldersData }] = useLazyQuery(
     FOLDERS_WITH_NOTES_COUNT,
-    { skip: !isNewFolderAdded }
+    {
+      variables: { options: { ...foldersInput }},
+      context: setRequestHeader({ sessionToken }),
+      fetchPolicy: 'network-only' // do not check cache first
+    },
   );
 
   const route = useRouter();
@@ -84,6 +88,7 @@ const Home = ({
     setSelectedCards(newSelectedNotes);
   }
 
+  // delete selected notes
   const handleDeleteAll = async () => {
     const notes: ISelectedCard[] = selectedCards.filter((card: ISelectedCard) => card.type === 'note');
     const notesIds: string[] = notes.map((note: ISelectedCard): string => note.id);
@@ -106,6 +111,7 @@ const Home = ({
     toggleSelectMode();
   };
 
+  // server side or updated client side note list
   const noteList: INote[] = useMemo(() => {
     if (isNotesDeleted && newNotesData) {
       return newNotesData.getNotesByUser.data;
@@ -114,23 +120,20 @@ const Home = ({
     return notes;
   }, [newNotesData, newNotesData, notes]);
 
+  // server side or updated client side folder list
   const folderList: IFolder[] = useMemo(() => {
     if (newFoldersData) {
-      return newFoldersData.getFoldersWithNotesCount;
+      return newFoldersData.getUserFoldersWithNotesCount.data;
     }
 
     return folders;
   }, [newFoldersData, newFoldersData, notes]);
 
-  const updateFoldersList = (value: boolean = true) => {
-    setINewFolderAdded(value);
-  }
-
   return (
     <PageLayout
       withBackButton={false}
       loading={newNotesLoading || foldersLoading}
-      leftActions={<HomeAppBar updateFoldersList={updateFoldersList} />}
+      leftActions={<HomeAppBar reloadFolders={getFoldersQuery} />}
       elevate={false}
       bodySx={{ alignSelf: 'stretch' }}
     >
@@ -185,7 +188,12 @@ export const getServerSideProps = withSession(async ({ sessionToken }) => {
         page: noteResult.currentPage,
         perPage: noteResult.perPage,
         withFolder: false,
-        sort: 'updatedAt@desc'
+        sort: DEFAULT_SORT
+      },
+      foldersInput: {
+        page: folderResult.currentPage,
+        perPage: folderResult.perPage,
+        sort: DEFAULT_SORT
       }
     }
   };

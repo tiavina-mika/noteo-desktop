@@ -17,3 +17,4 @@ export const IMAGE_BANNER = {
 };
 
 export const DEFAULT_PER_PAGE: number = 30;
+export const DEFAULT_SORT: string = 'updatedAt@desc';
