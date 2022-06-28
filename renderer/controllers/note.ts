@@ -14,6 +14,7 @@ export const NOTES = gql`
         content
         updatedAt
         folder { name }
+        deleted
       }
       totalData
       totalPage
@@ -107,11 +108,16 @@ export const NOTES_FROM_RECYCLE_BIN = gql`
 * @var ids string[]
 * @var value boolean
 */
-export const RECYCLE_BIN_NOTES = gql`
-mutation MoveNotesToRecycleBin($values: RecycleBinNotesInput!) {
- moveNotesToRecycleBin(values: $values)
-}
+export const MANY_RECYCLE_BIN_NOTES = gql`
+  mutation MoveManyUserNotesToRecycleBin($ids: [String!]!, $value: Boolean!) {
+    moveManyUserNotesToRecycleBin(ids: $ids, value: $value) 
+  }
 `;
+// export const RECYCLE_BIN_NOTES = gql`
+// mutation MoveNotesToRecycleBin($values: RecycleBinNotesInput!) {
+//  moveNotesToRecycleBin(values: $values)
+// }
+// `;
 
 /**
  * get single note by its id

@@ -1,22 +1,24 @@
-import React, { Fragment, useMemo, useState } from 'react';
+import React, { Fragment, ReactNode, useContext, useMemo, useState } from 'react';
 
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useRouter } from 'next/router';
 
 import PageLayout from '../components/layout/PageLayout';
-import { getNotesByUser, NOTES_WITHOUT_FOLDER, RECYCLE_BIN_NOTES } from '../controllers/note';
+import { getNotesByUser, NOTES, MANY_RECYCLE_BIN_NOTES } from '../controllers/note';
 import { getUserFoldersWithNotesCount, FOLDERS_WITH_NOTES_COUNT } from '../controllers/folder';
-import { Note as NoteType} from '../types/notes';
-import { Folder as FolderType } from '../types/folders';
+import { Note as INote, NoteListInput } from '../types/notes';
+import { Folder as IFolder } from '../types/folders';
 import FloatingButtonActions from '../components/FloatingButtonActions';
 import Folder from '../containers/folders/Folder';
 import Note from '../containers/notes/Note';
-import { useMutation, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import HomeAppBar from '../containers/home/HomeAppBar';
 import Masonry from '../components/Masonry';
 import ActionsDrawer from '../components/ActionsDrawer';
 import EmptyNotes from '../containers/notes/EmptyNotes';
 import withSession from '../middleware/withSession';
+import { AppContext } from '../components/providers/AppProvider';
+import { setRequestHeader } from '../utils/utils';
 
 interface ISelectedCard {
   id: string;
@@ -24,26 +26,34 @@ interface ISelectedCard {
 }
 
 type Props = {
-  notes: NoteType[];
-  folders: FolderType[];
+  notes: INote[];
+  folders: IFolder[];
+  notesInput: Pick<NoteListInput, 'page' | 'perPage' | 'withFolder'>
 }
 
-const Home = ({ notes, folders }: Props) => {
+const Home = ({
+  notes, folders, notesInput,
+}: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
   const [isNotesDeleted, setIsNotesDeleted] = useState<boolean>(false);
   const [isNewFolderAdded, setINewFolderAdded] = useState<boolean>(false);
 
-  const [
-    moveNotesToRecycleBin,
-    { loading: moveNotesToRecycleBinLoading, error: moveNotesToRecycleBinError, data: deletedNotes }
-  ] = useMutation(RECYCLE_BIN_NOTES);
+	const { sessionToken } = useContext(AppContext);
 
-  const {
-    data: newNotesData, error: notesError, loading: notesLoading,
-  } = useQuery(
-    NOTES_WITHOUT_FOLDER,
-    { skip: !deletedNotes?.moveNotesToRecycleBin }
+  const [
+    moveManyUserNotesToRecycleBin,
+    { loading: moveNotesToRecycleBinLoading, error: moveNotesToRecycleBinError, data: deletedNotes }
+  ] = useMutation(MANY_RECYCLE_BIN_NOTES, { context: setRequestHeader({ sessionToken }) });
+
+  // load new notes list after deletion
+  const [getNotesByUserQuery, { loading: newNotesLoading, data: newNotesData }] = useLazyQuery(
+    NOTES,
+    {
+      variables: { options: { ...notesInput }},
+      context: setRequestHeader({ sessionToken }),
+      fetchPolicy: 'network-only' // do not check cache first
+    },
   );
 
   const {
@@ -74,20 +84,21 @@ const Home = ({ notes, folders }: Props) => {
     setSelectedCards(newSelectedNotes);
   }
 
-  const handleDeleteAll = () => {
+  const handleDeleteAll = async () => {
     const notes: ISelectedCard[] = selectedCards.filter((card: ISelectedCard) => card.type === 'note');
     const notesIds: string[] = notes.map((note: ISelectedCard): string => note.id);
 
-    // set the deleted field to true for the given notes by its id
-    const values = { ids: notesIds, value: true };
-    moveNotesToRecycleBin({
-      variables: { values }, 
+    const result = await moveManyUserNotesToRecycleBin({
+      variables: { ids: notesIds, value: true },
     });
-
+  
     if (!moveNotesToRecycleBinLoading) {
       setIsNotesDeleted(true);
       setSelectedCards([]);
     }
+
+    if (!result) return;
+    getNotesByUserQuery()
   };
 
   const onCloseActionsDrawer = () => {
@@ -95,16 +106,15 @@ const Home = ({ notes, folders }: Props) => {
     toggleSelectMode();
   };
 
-  
-  const noteList = useMemo(() => {
+  const noteList: INote[] = useMemo(() => {
     if (isNotesDeleted && newNotesData) {
-      return newNotesData.getNotesWithoutFolder;
+      return newNotesData.getNotesByUser.data;
     }
 
     return notes;
   }, [newNotesData, newNotesData, notes]);
 
-  const folderList = useMemo(() => {
+  const folderList: IFolder[] = useMemo(() => {
     if (newFoldersData) {
       return newFoldersData.getFoldersWithNotesCount;
     }
@@ -119,7 +129,7 @@ const Home = ({ notes, folders }: Props) => {
   return (
     <PageLayout
       withBackButton={false}
-      loading={notesLoading || foldersLoading}
+      loading={newNotesLoading || foldersLoading}
       leftActions={<HomeAppBar updateFoldersList={updateFoldersList} />}
       elevate={false}
       bodySx={{ alignSelf: 'stretch' }}
@@ -128,10 +138,10 @@ const Home = ({ notes, folders }: Props) => {
           ? (
             <Masonry>
               <Fragment>
-                {folderList.map((folder) => (
+                {folderList.map((folder: IFolder): ReactNode => (
                   <Folder key={folder.id} folder={folder} />
                 ))}
-                {noteList.map((note) => (
+                {noteList.map((note: INote): ReactNode => (
                   <Note
                     key={note.id}
                     note={note}
@@ -171,6 +181,12 @@ export const getServerSideProps = withSession(async ({ sessionToken }) => {
     props: {
       notes: noteResult?.data || [],
       folders: folderResult?.data || [],
+      notesInput: {
+        page: noteResult.currentPage,
+        perPage: noteResult.perPage,
+        withFolder: false,
+        sort: 'updatedAt@desc'
+      }
     }
   };
 });
