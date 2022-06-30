@@ -235,11 +235,12 @@ export const getNotesByUser = async ({
   sort = 'updatedAt@desc',
   withFolder,
   sessionToken,
+  folderId,
 }: NoteListInput): Promise<NotesResult> => {
   try {
     const { data } = await client.query({
       query: NOTES,
-      variables: { options: { search, page, perPage, sort, withFolder }},
+      variables: { options: { search, page, perPage, sort, withFolder, folderId }},
       context: setRequestHeader({ sessionToken })
     });
 

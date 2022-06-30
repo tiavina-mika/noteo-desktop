@@ -3,7 +3,7 @@ import {
 } from '@mui/material';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { LoadingButton } from '@mui/lab';
 
 import TextField from '../../components/form/TextField';
@@ -51,17 +51,8 @@ const NoteForm = ({
   });
 
   const {
-    formState: { isSubmitSuccessful },
-    reset,
     handleSubmit,
   } = form;
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubmitSuccessful]);
 
   const onSubmitHandler: SubmitHandler<NoteInput> = async (values) => {
     let result
@@ -77,9 +68,15 @@ const NoteForm = ({
     }
 
     if (!result) return;
+    if (updateNoteLoading || createNoteLoading) return;
   
     if (onSubmit) {
       onSubmit();
+      return;
+    }
+
+    if (folder) {
+      route.push(PATH_NAMES.folders + '/' + folder.id);
       return;
     }
   

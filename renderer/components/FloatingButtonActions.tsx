@@ -6,9 +6,9 @@ import { useRouter } from 'next/router';
 
 type Props = {
   addUrl?: string;
-  onCreateClick?: () => void;
+  onAddClick?: () => void;
 }
-const FloatingButtonActions = ({ addUrl, onCreateClick }: Props) => {
+const FloatingButtonActions = ({ addUrl, onAddClick }: Props) => {
   const route = useRouter();
 
   const goToCreation = () => {
@@ -17,8 +17,8 @@ const FloatingButtonActions = ({ addUrl, onCreateClick }: Props) => {
 
   return (
     <Stack sx={{ position: 'fixed', bottom: 15, right: 15}}>
-      {(onCreateClick || addUrl) && (
-        <Fab color="primary" aria-label="add" onClick={onCreateClick || goToCreation}>
+      {(onAddClick || addUrl) && (
+        <Fab color="primary" aria-label="add" onClick={onAddClick || goToCreation}>
           <AddIcon />
         </Fab>
       )}

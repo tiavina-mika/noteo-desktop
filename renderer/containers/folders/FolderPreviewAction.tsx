@@ -5,10 +5,13 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { Folder } from '../../types/folders';
 import { DELETE_FOLDER } from '../../controllers/folder';
-import { Fragment, MouseEvent, useCallback, useState } from 'react';
+import { Fragment, MouseEvent, useCallback, useContext, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
 import FolderDialogForm from './FolderDialogForm';
+import { AppContext } from '../../components/providers/AppProvider';
+import { setRequestHeader } from '../../utils/utils';
+import { PATH_NAMES } from '../../utils/constants';
 
 const ITEM_HEIGHT = 48;
 
@@ -27,8 +30,9 @@ const FolderPreviewAction = ({ folder }: Props) => {
 
   const open = Boolean(anchorEl);
   const route = useRouter();
+	const { sessionToken } = useContext(AppContext);
 
-  const [deleteFolder, { loading: deleteFolderLoading, error: deleteFolderError }] = useMutation(DELETE_FOLDER);
+  const [deleteFolder, { loading: deleteFolderLoading, error: deleteFolderError }] = useMutation(DELETE_FOLDER, { context: setRequestHeader({ sessionToken }) });
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,13 +42,14 @@ const FolderPreviewAction = ({ folder }: Props) => {
     setAnchorEl(null);
   };
 
-  const onDelete = useCallback(() => {
-    deleteFolder({ variables: { id: folder.id }});
+  const onDelete = async () => {
+    const result = await deleteFolder({ variables: { id: folder.id }});
+    if (!result) return;
     handleClose();
 
     if (deleteFolderLoading) return;
-    route.push('/home');
-  }, [deleteFolderLoading]);
+    route.push(PATH_NAMES.home);
+  };
 
   const handleFolderFormClickOpen = () => {
     setOpenFolderFormDialog(true);

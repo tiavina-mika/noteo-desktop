@@ -20,6 +20,8 @@ import withSession from '../middleware/withSession';
 import { AppContext } from '../components/providers/AppProvider';
 import { setRequestHeader } from '../utils/utils';
 import { DEFAULT_SORT } from '../utils/constants';
+import FullScreenDialog from '../components/FullScreenDialog';
+import NoteForm from '../containers/notes/NoteForm';
 
 interface ISelectedCard {
   id: string;
@@ -38,8 +40,8 @@ const Home = ({
   foldersInput,
 }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
+  const [openNoteCreationDialog, setOpenNoteCreationDialog] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
-  const [isNotesDeleted, setIsNotesDeleted] = useState<boolean>(false);
 
 	const { sessionToken } = useContext(AppContext);
 
@@ -69,15 +71,15 @@ const Home = ({
 
   const route = useRouter();
 
-  const handleNoteSelect = (id: string) => {
+  const handleNoteClick = (id: string) => {
     route.push('/notes/edit/' + id)
   }
 
   const toggleSelectMode = () => setSelectMode(!selectMode);
+  const toggleOpenNoteCreationDialog = () => setOpenNoteCreationDialog(!openNoteCreationDialog);
 
   const handleSelectNote = (id: string, checked: boolean) => {
     // add the checked notes to the selected cards
-    setIsNotesDeleted(false);
     if (checked) {
       setSelectedCards((prev) => [...prev, { id, type: 'note' }]);
       return;
@@ -90,49 +92,66 @@ const Home = ({
 
   // delete selected notes
   const handleDeleteAll = async () => {
+    // the selected note cards, it may be a folder and note
     const notes: ISelectedCard[] = selectedCards.filter((card: ISelectedCard) => card.type === 'note');
+    // send only the ids to the request
     const notesIds: string[] = notes.map((note: ISelectedCard): string => note.id);
 
+    // mark deleted as true for the selected note ids
     const result = await moveManyUserNotesToRecycleBin({
       variables: { ids: notesIds, value: true },
     });
   
+    // clear selected cards
     if (!moveNotesToRecycleBinLoading) {
-      setIsNotesDeleted(true);
       setSelectedCards([]);
     }
 
     if (!result) return;
-    getNotesByUserQuery()
+    // update note list
+    getNotesByUserQuery();
   };
 
+  const onNoteCreated = async () => {
+    // update note list after a note is created
+    const result = await getNotesByUserQuery();
+
+    if (!result) return;
+    // close the creation note dialog
+    toggleOpenNoteCreationDialog();
+  }
+
   const onCloseActionsDrawer = () => {
+    // empty the selected cards (notes or/and folders)
     setSelectedCards([]);
+    // close the selected actions (delete, ...) dialog
     toggleSelectMode();
   };
 
-  // server side or updated client side note list
   const noteList: INote[] = useMemo(() => {
-    if (isNotesDeleted && newNotesData) {
+    // after the note list is updated (client side)
+    if (newNotesData) {
       return newNotesData.getNotesByUser.data;
     }
 
+    // the notes list from server side (by default)
     return notes;
   }, [newNotesData, newNotesData, notes]);
 
-  // server side or updated client side folder list
   const folderList: IFolder[] = useMemo(() => {
+    // after the folder list is updated (client side)
     if (newFoldersData) {
       return newFoldersData.getUserFoldersWithNotesCount.data;
     }
 
+    // the folders list from server side (by default)
     return folders;
   }, [newFoldersData, newFoldersData, notes]);
 
   return (
     <PageLayout
       withBackButton={false}
-      loading={newNotesLoading || foldersLoading}
+      loading={newNotesLoading || foldersLoading || moveNotesToRecycleBinLoading}
       leftActions={<HomeAppBar reloadFolders={getFoldersQuery} />}
       elevate={false}
       bodySx={{ alignSelf: 'stretch' }}
@@ -148,7 +167,7 @@ const Home = ({
                   <Note
                     key={note.id}
                     note={note}
-                    onClick={() => handleNoteSelect(note.id)}
+                    onClick={() => handleNoteClick(note.id)}
                     toggleSelectMode={toggleSelectMode}
                     selectMode={selectMode}
                     onSelect={handleSelectNote}
@@ -160,18 +179,25 @@ const Home = ({
             <EmptyNotes />
           )
         }
-         <ActionsDrawer
-            open={selectedCards.length > 0}
-            onClose={onCloseActionsDrawer}
-            actions={[
-              {
-                label: 'Delete',
-                icon: <DeleteOutlineIcon />,
-                onClick: handleDeleteAll,
-              }
-            ]}
-         />
-      <FloatingButtonActions addUrl="/notes/add" />
+        <ActionsDrawer
+          open={selectedCards.length > 0}
+          onClose={onCloseActionsDrawer}
+          actions={[
+            {
+              label: 'Delete',
+              icon: <DeleteOutlineIcon />,
+              onClick: handleDeleteAll,
+            }
+          ]}
+        />
+      <FloatingButtonActions onAddClick={toggleOpenNoteCreationDialog} />
+      <FullScreenDialog
+        open={openNoteCreationDialog}
+        toggle={toggleOpenNoteCreationDialog}
+        title="Add a note"
+      >
+        <NoteForm onSubmit={onNoteCreated}/>
+      </FullScreenDialog>
     </PageLayout>
   );
 };
