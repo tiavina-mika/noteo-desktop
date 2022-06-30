@@ -10,6 +10,8 @@ export const PATH_NAMES = {
   login: '/login',
   signup: '/signup',
   profile: '/profile',
+  notesByFolder: '/folders/notes',
+  folders: '/folders',
 };
 
 export const IMAGE_BANNER = {

@@ -29,6 +29,7 @@ export interface EditNoteInput {
 
 export interface NoteListInput extends IPaginationInput, IRequestHeadersParams {
   withFolder?: boolean;
+  folderId?: string;
 }
 
 export interface NotesResult extends IResponsePaging {

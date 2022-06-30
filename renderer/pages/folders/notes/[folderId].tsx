@@ -1,5 +1,6 @@
 import CreateNotePage from '../../../containers/notes/CreateNotePage';
 import { getFolderById } from '../../../controllers/folder';
+import withSession from '../../../middleware/withSession';
 import { Folder } from '../../../types/folders';
 
 type Props = {
@@ -11,14 +12,14 @@ const AddNoteInFolder = ({ folder }: Props) => {
   );
 };
 
-export const getServerSideProps = async ({ params }) => {
-  const { folder } = await getFolderById(params.folderId)
+export const getServerSideProps = withSession(async ({ params, sessionToken }) => {
+  const folder = await getFolderById(params.folderId, sessionToken);
 
   return {
     props: {
       folder,
     },
   };
-};
+});
 
 export default AddNoteInFolder;

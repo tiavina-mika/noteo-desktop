@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 import client from '../apollo-client';
-import { FolderListInput, FoldersResult } from '../types/folders';
+import { Folder, FolderListInput, FoldersResult } from '../types/folders';
 import { DEFAULT_PER_PAGE } from '../utils/constants';
 import { setRequestHeader } from '../utils/utils';
 
@@ -51,25 +51,23 @@ export const FOLDERS_WITH_NOTES_COUNT = gql`
  * @param id 
  * @returns 
  */
-export const getFolderById = async (id: string) => {
+export const getFolderById = async (id: string, sessionToken: string): Promise<Folder> => {
   try {
     const { data } = await client.query({
       query: gql`
-      query GetFolderById($id: String!) {
-        getFolderById(id: $id) {
-          id
-          name
+        query GetUserFolderById($id: String!) {
+          getUserFolderById(id: $id) {
+            id
+            name
+            updatedAt
+          }
         }
-      }
       `,
-      variables: {
-        id,
-      }
+      variables: { id },
+      context: setRequestHeader({ sessionToken })
     });
 
-    return {
-      folder: data.getFolderById
-    }
+    return data.getUserFolderById;
   } catch (error) {
     console.log('controller.folder.getFolderById error: ', error.massage);
   }
@@ -150,8 +148,8 @@ export const ADD_FOLDER = gql`
 `;
 
 export const DELETE_FOLDER = gql`
-  mutation DeleteFolder($id: String!) {
-    deleteFolder(id: $id) {
+  mutation DeleteUserFolder($id: String!) {
+    deleteUserFolder(id: $id) {
       id
     }
   }
