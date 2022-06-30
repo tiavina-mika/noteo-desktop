@@ -74,7 +74,7 @@ const PageLayout = ({
           {rightActions && rightActions}
         </Toolbar>
       </AppBar>
-      <Box display="flex" flexDirection="column" alignItems="center" px={10}>
+      <Box display="flex" flexDirection="column" alignItems="center" px={10} pb={10}>
         <Box pt={5} sx={bodySx} alignSelf={fullWidth ? 'stretch' : ''}>
           {children}        
         </Box>

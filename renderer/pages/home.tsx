@@ -23,6 +23,7 @@ import { DEFAULT_SORT } from '../utils/constants';
 import FullScreenDialog from '../components/FullScreenDialog';
 import NoteForm from '../containers/notes/NoteForm';
 import { useNotes } from '../hooks/useNotes';
+import { useFolders } from '../hooks/useFolders';
 
 interface ISelectedCard {
   id: string;
@@ -44,47 +45,51 @@ const Home = ({
     notesLoading,
     moveNotesToRecycleBinLoading,
     noteList,
-    selectMode,
+    selectNoteMode,
     onNoteClick: handleNoteClick,
-    toggleSelectMode,
+    toggleNoteSelectMode,
     onSelectNote: handleSelectNote,
     toggleOpenNoteCreationDialog,
     openNoteCreationDialog,
     onNoteCreated,
-    onDeleteSelected: handleDeleteSelected,
+    onDeleteSelectedNotes,
     onCloseNotesActionsDrawer,
     selectedNotesCards
-  } = useNotes({ notes, notesInput })
-  const [openActionDrawer, setOpenActionDrawer] = useState<boolean>(false);
-  // const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
+  } = useNotes({ notes, notesInput });
 
-	const { sessionToken } = useContext(AppContext);
+  const {
+    foldersLoading,
+    deleteFoldersLoading,
+    folderList,
+    selectFolderMode,
+    onFolderClick: handleFolderClick,
+    toggleFolderSelectMode,
+    onSelectFolder: handleSelectFolder,
+    toggleOpenFolderCreationDialog,
+    onFolderCreated,
+    onDeleteSelectedFolders,
+    onCloseFoldersActionsDrawer,
+    selectedFoldersCards,
+    reloadFoldersList
+  } = useFolders({ folders, foldersInput })
 
+  const onCloseActionDrawer = () => {
+    onCloseNotesActionsDrawer();
+    onCloseFoldersActionsDrawer();
+  };
 
-  const [getFoldersQuery, { loading: foldersLoading, error: foldersError, data: newFoldersData }] = useLazyQuery(
-    FOLDERS_WITH_NOTES_COUNT,
-    {
-      variables: { options: { ...foldersInput }},
-      context: setRequestHeader({ sessionToken }),
-      fetchPolicy: 'network-only' // do not check cache first
-    },
-  );
-
-  const folderList: IFolder[] = useMemo(() => {
-    // after the folder list is updated (client side)
-    if (newFoldersData) {
-      return newFoldersData.getUserFoldersWithNotesCount.data;
-    }
-
-    // the folders list from server side (by default)
-    return folders;
-  }, [newFoldersData, newFoldersData, notes]);
+  const handleDeletedSelectedCards = async () => {
+    await Promise.all([
+      await onDeleteSelectedNotes(),
+      await onDeleteSelectedFolders(),
+    ]);
+  };
 
   return (
     <PageLayout
       withBackButton={false}
-      loading={notesLoading || foldersLoading || moveNotesToRecycleBinLoading}
-      leftActions={<HomeAppBar reloadFolders={getFoldersQuery} />}
+      loading={notesLoading || foldersLoading || moveNotesToRecycleBinLoading || deleteFoldersLoading}
+      leftActions={<HomeAppBar reloadFolders={reloadFoldersList} />}
       elevate={false}
       bodySx={{ alignSelf: 'stretch' }}
     >
@@ -93,15 +98,22 @@ const Home = ({
             <Masonry>
               <Fragment>
                 {folderList.map((folder: IFolder): ReactNode => (
-                  <Folder key={folder.id} folder={folder} />
+                  <Folder
+                    key={folder.id}
+                    folder={folder}
+                    onClick={() => handleFolderClick(folder.id)}
+                    toggleSelectMode={toggleFolderSelectMode}
+                    selectMode={selectFolderMode}
+                    onSelect={handleSelectFolder}
+                  />
                 ))}
                 {noteList.map((note: INote): ReactNode => (
                   <Note
                     key={note.id}
                     note={note}
                     onClick={() => handleNoteClick(note.id)}
-                    toggleSelectMode={toggleSelectMode}
-                    selectMode={selectMode}
+                    toggleSelectMode={toggleNoteSelectMode}
+                    selectMode={selectNoteMode}
                     onSelect={handleSelectNote}
                   />
                 ))}
@@ -112,13 +124,13 @@ const Home = ({
           )
         }
         <ActionsDrawer
-          open={selectedNotesCards.length > 0}
-          onClose={onCloseNotesActionsDrawer}
+          open={[...selectedNotesCards, ...selectedFoldersCards].length > 0}
+          onClose={onCloseActionDrawer}
           actions={[
             {
               label: 'Delete',
               icon: <DeleteOutlineIcon />,
-              onClick: handleDeleteSelected,
+              onClick: handleDeletedSelectedCards,
             }
           ]}
         />

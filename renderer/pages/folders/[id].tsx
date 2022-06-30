@@ -43,7 +43,6 @@ const FolderPreview = ({ folder, notes, notesInput }: Props) => {
       fetchPolicy: 'network-only' // do not check cache first
     },
   );
-  console.log('newNotesData: ', newNotesData);
 
   const route = useRouter();
 

@@ -20,6 +20,7 @@ const Note = ({
   note, onClick, onSelect,
   toggleSelectMode, selectMode,
 }: Props) => {
+
   const handleMouseEnter = () => {
     if (selectMode) return;
     if (!toggleSelectMode) return;

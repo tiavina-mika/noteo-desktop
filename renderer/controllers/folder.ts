@@ -15,18 +15,6 @@ export const GET_FOLDERS = gql`
   }
 `;
 
-// {
-//   "data": {
-//     "getFoldersWithNotesCount": [
-//       {
-//         "id": "62a4e310237ee736c492a71b",
-//         "notes": 0,
-//         "name": "folder 2",
-//         "updatedAt": "2022-06-11T18:46:40.488Z"
-//       },
-//     ]
-//   }
-// }
 export const FOLDERS_WITH_NOTES_COUNT = gql`
   query GetUserFoldersWithNotesCount ($options: FolderListInput!) {
     getUserFoldersWithNotesCount (options: $options) {
@@ -43,6 +31,12 @@ export const FOLDERS_WITH_NOTES_COUNT = gql`
       availableSearch
       availableSort
     }
+  }
+`;
+
+export const DELETE_MANY_FOLDERS = gql`
+  mutation DeleteManyFoldersByUser($ids: [String!]!) {
+    deleteManyFoldersByUser(ids: $ids) 
   }
 `;
 

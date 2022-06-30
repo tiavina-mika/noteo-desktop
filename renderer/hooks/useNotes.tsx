@@ -17,14 +17,12 @@ type Props = {
   notes: INote[];
   notesInput: Pick<NoteListInput, 'page' | 'perPage' | 'withFolder' | 'sort'>;
   openDrawer?: boolean;
-  toggleDrawer?: () => void;
 }
 
 export const useNotes = ({
   notes,
   notesInput,
   openDrawer,
-  toggleDrawer
 }: Props) => {
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [openNoteCreationDialog, setOpenNoteCreationDialog] = useState<boolean>(false);
@@ -106,7 +104,6 @@ export const useNotes = ({
     setSelectedCards(otherThanNotes);
     // close the selected actions (delete, ...) dialog
     toggleSelectMode();
-    toggleDrawer();
   };
 
   const noteList: INote[] = useMemo(() => {
@@ -123,14 +120,14 @@ export const useNotes = ({
     notesLoading,
     moveNotesToRecycleBinLoading,
     noteList,
-    selectMode,
+    selectNoteMode: selectMode,
     onNoteClick: handleNoteClick,
-    toggleSelectMode,
+    toggleNoteSelectMode: toggleSelectMode,
     onSelectNote: handleSelectNote,
     toggleOpenNoteCreationDialog,
     openNoteCreationDialog,
     onNoteCreated,
-    onDeleteSelected: handleDeleteSelected,
+    onDeleteSelectedNotes: handleDeleteSelected,
     onCloseNotesActionsDrawer: onCloseActionsDrawer,
     selectedNotesCards: selectedCards,
   };
