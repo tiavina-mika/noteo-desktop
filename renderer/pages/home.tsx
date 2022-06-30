@@ -22,6 +22,7 @@ import { setRequestHeader } from '../utils/utils';
 import { DEFAULT_SORT } from '../utils/constants';
 import FullScreenDialog from '../components/FullScreenDialog';
 import NoteForm from '../containers/notes/NoteForm';
+import { useNotes } from '../hooks/useNotes';
 
 interface ISelectedCard {
   id: string;
@@ -39,26 +40,26 @@ const Home = ({
   notes, folders, notesInput,
   foldersInput,
 }: Props) => {
-  const [selectMode, setSelectMode] = useState<boolean>(false);
-  const [openNoteCreationDialog, setOpenNoteCreationDialog] = useState<boolean>(false);
-  const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
+  const {
+    notesLoading,
+    moveNotesToRecycleBinLoading,
+    noteList,
+    selectMode,
+    onNoteClick: handleNoteClick,
+    toggleSelectMode,
+    onSelectNote: handleSelectNote,
+    toggleOpenNoteCreationDialog,
+    openNoteCreationDialog,
+    onNoteCreated,
+    onDeleteSelected: handleDeleteSelected,
+    onCloseNotesActionsDrawer,
+    selectedNotesCards
+  } = useNotes({ notes, notesInput })
+  const [openActionDrawer, setOpenActionDrawer] = useState<boolean>(false);
+  // const [selectedCards, setSelectedCards] = useState<ISelectedCard[]>([]);
 
 	const { sessionToken } = useContext(AppContext);
 
-  const [
-    moveManyUserNotesToRecycleBin,
-    { loading: moveNotesToRecycleBinLoading, error: moveNotesToRecycleBinError, data: deletedNotes }
-  ] = useMutation(MANY_RECYCLE_BIN_NOTES, { context: setRequestHeader({ sessionToken }) });
-
-  // load new notes list after deletion
-  const [getNotesByUserQuery, { loading: newNotesLoading, data: newNotesData }] = useLazyQuery(
-    NOTES,
-    {
-      variables: { options: { ...notesInput }},
-      context: setRequestHeader({ sessionToken }),
-      fetchPolicy: 'network-only' // do not check cache first
-    },
-  );
 
   const [getFoldersQuery, { loading: foldersLoading, error: foldersError, data: newFoldersData }] = useLazyQuery(
     FOLDERS_WITH_NOTES_COUNT,
@@ -68,75 +69,6 @@ const Home = ({
       fetchPolicy: 'network-only' // do not check cache first
     },
   );
-
-  const route = useRouter();
-
-  const handleNoteClick = (id: string) => {
-    route.push('/notes/edit/' + id)
-  }
-
-  const toggleSelectMode = () => setSelectMode(!selectMode);
-  const toggleOpenNoteCreationDialog = () => setOpenNoteCreationDialog(!openNoteCreationDialog);
-
-  const handleSelectNote = (id: string, checked: boolean) => {
-    // add the checked notes to the selected cards
-    if (checked) {
-      setSelectedCards((prev) => [...prev, { id, type: 'note' }]);
-      return;
-    }
-
-    // remove the unchecked notes to the selected cards
-    const newSelectedNotes = selectedCards.filter((card: ISelectedCard) => card.id !== id);
-    setSelectedCards(newSelectedNotes);
-  }
-
-  // delete selected notes
-  const handleDeleteAll = async () => {
-    // the selected note cards, it may be a folder and note
-    const notes: ISelectedCard[] = selectedCards.filter((card: ISelectedCard) => card.type === 'note');
-    // send only the ids to the request
-    const notesIds: string[] = notes.map((note: ISelectedCard): string => note.id);
-
-    // mark deleted as true for the selected note ids
-    const result = await moveManyUserNotesToRecycleBin({
-      variables: { ids: notesIds, value: true },
-    });
-  
-    // clear selected cards
-    if (!moveNotesToRecycleBinLoading) {
-      setSelectedCards([]);
-    }
-
-    if (!result) return;
-    // update note list
-    getNotesByUserQuery();
-  };
-
-  const onNoteCreated = async () => {
-    // update note list after a note is created
-    const result = await getNotesByUserQuery();
-
-    if (!result) return;
-    // close the creation note dialog
-    toggleOpenNoteCreationDialog();
-  }
-
-  const onCloseActionsDrawer = () => {
-    // empty the selected cards (notes or/and folders)
-    setSelectedCards([]);
-    // close the selected actions (delete, ...) dialog
-    toggleSelectMode();
-  };
-
-  const noteList: INote[] = useMemo(() => {
-    // after the note list is updated (client side)
-    if (newNotesData) {
-      return newNotesData.getNotesByUser.data;
-    }
-
-    // the notes list from server side (by default)
-    return notes;
-  }, [newNotesData, newNotesData, notes]);
 
   const folderList: IFolder[] = useMemo(() => {
     // after the folder list is updated (client side)
@@ -151,7 +83,7 @@ const Home = ({
   return (
     <PageLayout
       withBackButton={false}
-      loading={newNotesLoading || foldersLoading || moveNotesToRecycleBinLoading}
+      loading={notesLoading || foldersLoading || moveNotesToRecycleBinLoading}
       leftActions={<HomeAppBar reloadFolders={getFoldersQuery} />}
       elevate={false}
       bodySx={{ alignSelf: 'stretch' }}
@@ -180,13 +112,13 @@ const Home = ({
           )
         }
         <ActionsDrawer
-          open={selectedCards.length > 0}
-          onClose={onCloseActionsDrawer}
+          open={selectedNotesCards.length > 0}
+          onClose={onCloseNotesActionsDrawer}
           actions={[
             {
               label: 'Delete',
               icon: <DeleteOutlineIcon />,
-              onClick: handleDeleteAll,
+              onClick: handleDeleteSelected,
             }
           ]}
         />
